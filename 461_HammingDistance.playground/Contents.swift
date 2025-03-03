@@ -37,18 +37,18 @@ class Solution {
 }
 
 func hammingDistance(_ x: Int, _ y: Int) -> Int {
-        var num1 = UInt(x)
-        var num2 = UInt(y)
-        
-        var diff = 0
-        while num1 != 0 || num2 != 0 {
-            if (num1 & 1) != (num2 & 1) {
-                diff += 1
-            }
-            
-            num1 >>= 1
-            num2 >>= 1
+    var num1 = UInt(x)
+    var num2 = UInt(y)
+    
+    var diff = 0
+    while num1 != 0 || num2 != 0 {
+        if (num1 & 1) != (num2 & 1) {
+            diff += 1
         }
         
-        return diff
+        num1 >>= 1
+        num2 >>= 1
     }
+    
+    return diff
+}

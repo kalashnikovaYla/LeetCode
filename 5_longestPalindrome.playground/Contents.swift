@@ -58,7 +58,6 @@ func longestPalindrome(_ s: String) -> String {
 }
 
 private func expandAroundCenter(_ s: String, left: Int, right: Int) -> Int {
-    print("expandAroundCenter", s, left, right)
     let sArray = Array(s)
     var leftIndex = left
     var rightIndex = right

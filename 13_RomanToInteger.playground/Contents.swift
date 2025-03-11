@@ -45,56 +45,37 @@
  It is guaranteed that s is a valid roman numeral in the range [1, 3999].
  */
 
-import Foundation
-
-func romanToInt(_ s: String) -> Int {
+ 
+class Solution {
     
-    var input = s
-    var returnInt = 0
-    
-    if s.contains("IV") {
-        returnInt += 4
-        input = (input.components(separatedBy: "IV")).joined(separator:"")
-    }
-    if input.contains("IX") {
-        returnInt += 9
-        input = (input.components(separatedBy: "IX")).joined(separator:"")
-    }
-    if input.contains("XC") {
-        returnInt += 90
-        input = (input.components(separatedBy: "XC")).joined(separator:"")
-    }
-    if input.contains("XL") {
-        returnInt += 40
-        input = (input.components(separatedBy: "XL")).joined(separator:"")
-    }
-    if input.contains("CM") {
-        returnInt += 900
-        input = (input.components(separatedBy: "CM")).joined(separator:"")
-    }
-    if input.contains("CD") {
-        returnInt += 400
-        input = (input.components(separatedBy: "CD")).joined(separator:"")
-    }
-       
-    for i in input {
-        if i == "I" {
-            returnInt += 1
-        } else if i == "V" {
-            returnInt += 5
-        } else if i == "X" {
-            returnInt += 10
-        } else if i == "L" {
-            returnInt += 50
-        } else if i == "C" {
-               returnInt += 100
-        } else if i == "D" {
-            returnInt += 500
-        } else if i == "M" {
-            returnInt += 1000
+    func romanToInt(_ s: String) -> Int {
+        
+        let romanValues: [Character: Int] = [
+            "I": 1,
+            "V": 5,
+            "X": 10,
+            "L": 50,
+            "C": 100,
+            "D": 500,
+            "M": 1000
+        ]
+        
+        var total = 0
+        let characters = Array(s)
+        
+        for i in 0..<characters.count {
+            let value = romanValues[characters[i]]!
+          
+            if i + 1 < characters.count, let nextValue = romanValues[characters[i + 1]], nextValue > value {
+                total -= value
+            } else {
+                total += value
+            }
         }
+        
+        return total
     }
-    return returnInt
 }
 
-romanToInt("LVIII")
+ 
+Solution().romanToInt("IV")

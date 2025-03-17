@@ -347,7 +347,7 @@ class Counter {
     }
 }
 
-func getSomething11() {
+func doSomething11() {
     let counter = Counter()
     let group = DispatchGroup()
     
@@ -364,4 +364,29 @@ func getSomething11() {
         print("Final counter value: \(finalValue)")
     }
 }
-getSomething11()
+//doSomething11()
+
+func doSomething12() {
+    print("2")
+    DispatchQueue.main.async {
+        print("3")
+        
+        DispatchQueue.main.sync {
+            print("4")
+        }
+        print("5")
+    }
+    print("6")
+}
+ 
+/*
+ print("1")
+ doSomething12()
+ print("7")
+ 1
+ 2
+ 6
+ 7
+ 3
+ */
+

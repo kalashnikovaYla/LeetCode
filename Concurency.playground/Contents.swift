@@ -1,5 +1,6 @@
  
 import Foundation
+import UIKit
 
 func load() {
     DispatchQueue.main.async {
@@ -390,3 +391,215 @@ func doSomething12() {
  3
  */
 
+
+@MainActor
+class ViewModel: ObservableObject {
+    func runTest() async {
+        print("1")
+        await MainActor.run {
+            print("2")
+            Task { @MainActor in
+                print("3")
+            }
+            print("4")
+        }
+        print("5")
+    }
+}
+
+func doSomething13() {
+    Task {
+        let vm = await ViewModel()
+        await vm.runTest()
+    }
+}
+//doSomething13()
+/*
+ 1
+ 2
+ 4
+ 5
+ 3
+ */
+
+var counter = 0
+
+func doSomething14(){
+    
+    
+    func asyncIncrement() {
+        DispatchQueue.global().async {
+            for _ in 0..<1000 {
+                counter += 1
+            }
+        }
+    }
+    
+    func asyncDecrement() {
+        DispatchQueue.global().async {
+            for _ in 0..<1000 {
+                counter -= 1
+            }
+        }
+    }
+    
+    asyncIncrement()
+    asyncDecrement()
+    Thread.sleep(forTimeInterval: 1.0)
+    print(counter)
+}
+
+//doSomething14() //резултат неопределен
+
+func doSomething15() {
+    DispatchQueue.global().async {
+        print("1")
+        DispatchQueue.global().sync {
+            print("2")
+        }
+        DispatchQueue.global().async {
+            print("3")
+        }
+        print("4")
+    }
+}
+//doSomething15() //1 2 4 3
+
+
+func doSomething16() {
+    let group = DispatchGroup()
+   
+    group.enter()
+    DispatchQueue.global().sync {
+        print("watermelon")
+        group.leave()
+    }
+    
+    group.enter()
+    DispatchQueue.main.async {
+        print("avocado")
+        group.leave()
+    }
+    
+    group.enter()
+    DispatchQueue.main.async {
+        print("peach")
+        group.leave()
+    }
+    group.notify(queue: .main) {
+        print("apple")
+    }
+}
+//doSomething16()
+/*
+ watermelon
+ avocado
+ peach
+ apple
+ */
+
+
+func doSomething17() {
+    class CustomOperation: Operation {
+        override func main() {
+            sleep(2)
+            print("Custom operation")
+        }
+    }
+    
+    let queue = OperationQueue()
+    for _ in 1...3 {
+        let operation = CustomOperation()
+        queue.addOperation(operation)
+    }
+    
+    print("start")
+    queue.waitUntilAllOperationsAreFinished()
+    print("Finished")
+}
+//doSomething17()
+/*
+ start
+ Custom operation
+ Custom operation
+ Custom operation
+ Finished
+ */
+
+
+func doSomething18() {
+    
+    print("1")
+    DispatchQueue.global().sync {
+        sleep(10)
+        print("2")
+        DispatchQueue.main.sync {
+             
+            print("3")
+        }
+        
+        print("4")
+    }
+    print("5")
+}
+ 
+//doSomething18() //1 2 deadlock
+
+
+func doSomething19() async -> Int {
+    print("1")
+    Task {
+        print("2")
+        Task { @MainActor in
+            print("3")
+        }
+        print("4")
+    }
+    print("5")
+    return 6
+}
+
+
+/*
+ Поскольку мы уже находимся в главном потоке, декоратор @MainActor добавит следующую задачу для выполнения на главном потоке, как только он освободится.  Система вызовет принт 1 и 5, затем выполнит задачу и вызовет печать 2 и 4, а также добавит следующую задачу в главный поток, где мы находимся. Поэтому система вернет 6 и напечатает это число. Только после этого система выполнит ожидающую задачу MainActor для вызова печати 3
+ 1 5 2 4 6 3
+ */
+
+
+func doSomething20() {
+    func processNumbers(numbers: [Int], completion: @escaping(Int) -> Void) {
+        DispatchQueue.global(qos: .background).async {
+            var sum = 0
+            for number in numbers {
+                sum += number
+            }
+            completion(sum)
+        }
+    }
+    
+    processNumbers(numbers: [1,2,3,4,5]) { result in
+        print("the sum \(result)")
+    }
+    print("end")
+}
+//doSomething20()
+/*
+ end
+ the sum 15
+ */
+
+
+func doSomething21() {
+    let queue = DispatchQueue(label: "label", attributes: .concurrent)
+    var result = [Int]()
+    for i in 0..<5 {
+        queue.async {
+            result.append(i)
+        }
+    }
+    queue.async {
+        print(result)
+    }
+}
+doSomething21()
+//?

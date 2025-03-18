@@ -95,3 +95,71 @@ final class Rectangle {
         return width * height
     }
 }
+
+//Static dispatch
+final class SampleFinalClass {
+    func sayHello() {
+        print("Hello!")
+    }
+}
+
+struct SampleStruct {
+    func sayHello() {
+        print("Hello!")
+    }
+}
+
+extension SampleStruct {
+    func someFunc() {
+        print("Hello!")
+    }
+}
+
+
+class Father {
+    func eat() {
+        print("father eats")
+    }
+    func walk() {}
+    func sleep() {}
+    func work() {}
+}
+ 
+
+class Child: Father {
+    override func eat() {
+        print("child eats")
+    }
+    override func walk() {}
+    override func sleep() {}
+    override func work() {}
+}
+
+let child = Child()
+//child.eat() // child eats
+
+let child2: Father = Child()
+//child2.eat() // child eats
+
+
+//Witness Table
+protocol GameProtocol {
+    func buyGame()
+}
+
+class Brother: GameProtocol {
+    func buyGame() {
+        print("AssassinsCreed")
+    }
+}
+
+class Sister: GameProtocol {
+    func buyGame() {
+        print("Barbie")
+    }
+}
+
+let brother = Brother()
+//brother.buyGame() //AssassinsCreed
+let sister: GameProtocol = Sister()
+sister.buyGame() //Barbie

@@ -34,7 +34,9 @@
 func summaryRanges(_ nums: [Int]) -> [String] {
     var result = [String]()
     
-    guard !nums.isEmpty else { return result }
+    guard !nums.isEmpty else {
+        return result
+    }
     
     var start = nums[0]
     

@@ -11,6 +11,7 @@
 
  Input: nums = [1,2,3,4]
  Output: [24,12,8,6]
+
  Example 2:
 
  Input: nums = [-1,1,0,-3,3]
@@ -31,7 +32,7 @@ class Solution {
         for i in (0 ..< nums.count - 1).reversed() {
             suffix[i] = suffix[i + 1] * nums[i + 1]
         }
-
+ 
         for i in 0 ..< nums.count {
             result[i] = suffix[i] * prefix[i]
         }
@@ -39,7 +40,7 @@ class Solution {
         return result
     }
 }
-
+Solution().productExceptSelf([1,2,3,4])
 /*
 Input: nums = [1,2,3,4]
 Output: [24,12,8,6]

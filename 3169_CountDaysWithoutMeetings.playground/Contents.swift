@@ -41,7 +41,7 @@
 class Solution {
     func countDays(_ days: Int, _ meetings: [[Int]]) -> Int {
         var meetings = meetings.sorted{$0[0]<$1[0]}
-        var d = 0
+        
         var lastDay = 0
         var count = 0
         for meeting in meetings {
@@ -58,4 +58,52 @@ class Solution {
 
         return count
     }
+}
+
+func countAvailableDays(totalDays: Int, meetings: [[Int]]) -> Int {
+    var bookedDays = Set<Int>()
+     
+    for meeting in meetings {
+        let start = meeting[0]
+        let end = meeting[1]
+        for day in start...end {
+            bookedDays.insert(day)
+        }
+    }
+    
+    /*
+     var availableDaysCount = 0
+     for day in 1...totalDays {
+         if !bookedDays.contains(day) {
+             availableDaysCount += 1
+         }
+     }
+     */
+    
+    return totalDays - bookedDays.count
+}
+
+ 
+let days = 10
+let meetings = [[5, 7], [1, 3], [9, 10]]
+let availableDays = countAvailableDays(totalDays: days, meetings: meetings)
+print(availableDays)
+
+
+func minSubArrayLen(target: Int, nums: [Int]) -> Int {
+    var left = 0
+    var sum = 0
+    var minLength = nums.count + 1
+    
+    for right in 0..<nums.count {
+        sum += nums[right]
+        
+        while sum >= target {
+            minLength = min(minLength, right - left + 1)
+            sum -= nums[left]
+            left += 1
+        }
+    }
+    
+    return minLength == nums.count + 1 ? 0 : minLength
 }

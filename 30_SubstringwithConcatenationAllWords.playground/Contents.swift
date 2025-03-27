@@ -145,35 +145,35 @@ struct State {
 
 
  
-    func findSubstring(_ s: String, _ words: [String]) -> [Int] {
-        let wordLength = words.first!.count
-        let wordsCounted = words.reduce(into: Dictionary<String, Int>()) { wordsCounted, word in
-            wordsCounted[word, default: 0] += 1
+func findSubstring(_ s: String, _ words: [String]) -> [Int] {
+    let wordLength = words.first!.count
+    let wordsCounted = words.reduce(into: Dictionary<String, Int>()) { wordsCounted, word in
+        wordsCounted[word, default: 0] += 1
+    }
+    var result = Array<Int>()
+    for i in 0 ..< wordLength {
+        guard var wordStartIndex = s.index(s.startIndex, offsetBy: i, limitedBy: s.endIndex) else {
+            break
         }
-        var result = Array<Int>()
-        for i in 0 ..< wordLength {
-            guard var wordStartIndex = s.index(s.startIndex, offsetBy: i, limitedBy: s.endIndex) else {
+        var sAsWords = Array<String>()
+        while true {
+            guard let wordEndIndex = s.index(
+                wordStartIndex,
+                offsetBy: wordLength,
+                limitedBy: s.endIndex) else {
                 break
             }
-            var sAsWords = Array<String>()
-            while true {
-                guard let wordEndIndex = s.index(
-                    wordStartIndex,
-                    offsetBy: wordLength,
-                    limitedBy: s.endIndex) else {
-                    break
-                }
-                let word = String(s[wordStartIndex ..< wordEndIndex])
-                sAsWords.append(word)
-                wordStartIndex = wordEndIndex
-            }
-            let r = slidingWindow(sAsWords, wordsCounted, words.count)
-            result += r.map { wordIndex in
-                i + wordIndex * wordLength
-            }
+            let word = String(s[wordStartIndex ..< wordEndIndex])
+            sAsWords.append(word)
+            wordStartIndex = wordEndIndex
         }
-        return result
+        let r = slidingWindow(sAsWords, wordsCounted, words.count)
+        result += r.map { wordIndex in
+            i + wordIndex * wordLength
+        }
     }
+    return result
+}
 
 func slidingWindow(_ s: [String], _ wordsCounted: Dictionary<String, Int>, _ wordCount: Int) -> [Int] {
     // print("slidingWindow \(s), wordsCounted=\(wordsCounted), wordCount=\(wordCount)")
@@ -223,43 +223,45 @@ func slidingWindow(_ s: [String], _ wordsCounted: Dictionary<String, Int>, _ wor
 
 class Solution2 {
     func findSubstring(_ s: String, _ words: [String]) -> [Int] {
-        // Length of each word
+         
         let wordLength = words.first!.count
-        // Total length of the concatenated substring
         let totalConcatLength = wordLength * words.count
-        // If the total length of concatenated substring is greater than the string length, return empty array
+     
         guard s.count >= totalConcatLength else { return [] }
 
         // Create a frequency map of the words
         var wordFrequencyMap: [[UInt8]: Int] = [:]
         for word in words {
-            let wordBytes = word.map { $0.asciiValue! }
+            let wordBytes = word.map {
+                $0.asciiValue!
+            }
             wordFrequencyMap[wordBytes, default: 0] += 1
         }
 
-        // Array to store the starting indices of the substrings
+        
         var resultIndices: [Int] = []
-        // Iterate over the string in chunks of wordLength
+        
         s.utf8.withContiguousStorageIfAvailable { inputBuffer in
+             
             for startOffset in 0..<wordLength {
-                // Create a current window map to track words in the current window
+                 
                 var currentWindowMap: [[UInt8]: Int] = [:]
+                
                 for pos in stride(from: startOffset, to: inputBuffer.count, by: wordLength) {
-                    // Ensure the current position + word length does not exceed the string length
+                    print(pos)
                     if pos + wordLength <= inputBuffer.count {
-                        // Extract the current word slice
+                        
                         let wordSlice = Array(inputBuffer[pos..<pos + wordLength])
-                        // Update the current window map with the current word slice
+                        print("wordSlice", wordSlice)
                         if wordFrequencyMap[wordSlice] != nil {
                             currentWindowMap[wordSlice, default: 0] += 1
                         }
-                        // Check if the window has reached the total concatenated length
+                         
                         if pos + wordLength >= totalConcatLength {
-                            // If the current window map matches the word frequency map, add the starting index to result
                             if currentWindowMap == wordFrequencyMap {
                                 resultIndices.append(pos + wordLength - totalConcatLength)
                             }
-                            // Remove the start of the window slice from the current window map
+                             
                             let removeStart = pos + wordLength - totalConcatLength
                             let removeSlice = Array(inputBuffer[removeStart..<removeStart + wordLength])
                             if wordFrequencyMap[removeSlice] != nil {
@@ -270,7 +272,50 @@ class Solution2 {
                 }
             }
         }
-        // Return the result indices
         return resultIndices
     }
+}
+ 
+
+func findSubstring3(_ s: String, _ words: [String]) -> [Int] {
+    let wordLength = words.first!.count
+    let totalConcatLength = wordLength * words.count
+
+    guard s.count >= totalConcatLength else { return [] }
+
+ 
+    var wordFrequencyMap: [String: Int] = [:]
+    for word in words {
+        wordFrequencyMap[word, default: 0] += 1
+    }
+
+    var resultIndices: [Int] = []
+
+  
+    for startIndex in 0...(s.count - totalConcatLength) {
+        var currentWindowMap: [String: Int] = [:]
+
+        for i in 0..<words.count {
+            let wordIndex = startIndex + i * wordLength
+            let word = String(s[s.index(s.startIndex, offsetBy: wordIndex)..<s.index(s.startIndex, offsetBy: wordIndex + wordLength)])
+
+            if let count = wordFrequencyMap[word] {
+                currentWindowMap[word, default: 0] += 1
+
+                if currentWindowMap[word]! > count {
+                   
+                    break
+                }
+            } else {
+                 
+                break
+            }
+        }
+
+        if currentWindowMap == wordFrequencyMap {
+            resultIndices.append(startIndex)
+        }
+    }
+
+    return resultIndices
 }

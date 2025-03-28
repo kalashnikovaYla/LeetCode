@@ -21,3 +21,33 @@
  Output: [10]
   
  */
+
+func partitionLabels(_ s: String) -> [Int] {
+    var lastOccurrence = [Character: Int]()
+     
+    for (index, char) in s.enumerated() {
+        lastOccurrence[char] = index
+    }
+    
+    var partitions = [Int]()
+    var currentEnd = 0
+    var partitionStart = 0
+    
+    for (index, char) in s.enumerated() {
+        currentEnd = max(currentEnd, lastOccurrence[char]!)
+       
+        if index == currentEnd {
+            partitions.append(currentEnd - partitionStart + 1)
+            partitionStart = index + 1
+        }
+    }
+    
+    return partitions
+}
+
+ 
+let example1 = "ababcbacadefegdehijhklij"
+let example2 = "eccbbbbdec"
+print(partitionLabels(example1)) // Output: [9, 7, 8]
+ 
+

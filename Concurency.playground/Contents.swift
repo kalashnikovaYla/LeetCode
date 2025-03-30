@@ -39,6 +39,10 @@ func doSomething() {
  
  Поскольку `async` означает, что задача будет выполнена позже, текущий поток не ждет завершения этой задачи. Поэтому выполнение потока продолжится, и строка `"2"` будет выведена немедленно, часто до того, как будет завершена задача, добавленная в очередь.
 
+ Вот если бы было sync
+ <_NSMainThread: 0x60000170c000>{number = 1, name = main}
+ 1
+ 2
  */
 
 func doSomething1() {
@@ -328,7 +332,11 @@ func doSomething10() {
 }
 //doSomething10()
 
-
+/*
+ Operation 1 is running
+ Operation 2 is running
+ All operations are completed
+ */
  
 class Counter {
     private var value: Int = 0
@@ -365,7 +373,7 @@ func doSomething11() {
         print("Final counter value: \(finalValue)")
     }
 }
-//doSomething11()
+doSomething11()
 
 func doSomething12() {
     print("2")
@@ -601,5 +609,5 @@ func doSomething21() {
         print(result)
     }
 }
-doSomething21()
+//doSomething21()
 //?

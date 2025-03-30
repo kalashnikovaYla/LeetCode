@@ -16,6 +16,7 @@
  Input: nums = [3,4,5,1,2]
  Output: 1
  Explanation: The original array was [1,2,3,4,5] rotated 3 times.
+
  Example 2:
 
  Input: nums = [4,5,6,7,0,1,2]

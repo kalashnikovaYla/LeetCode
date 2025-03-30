@@ -37,3 +37,22 @@ func climbStairs(_ n: Int) -> Int {
     }
     return result
 }
+
+
+class Solution {
+    var memo = [Int: Int]()
+    func climbStairs(_ n: Int) -> Int {
+        if n == 1 {
+            return 1
+        } else if n == 2 {
+            return 2
+        }
+
+        if let result = memo[n] {
+            return result
+        }
+        memo[n] = climbStairs(n-2) + climbStairs(n-1)
+        return memo[n]!
+    }
+}
+Solution().climbStairs(45)

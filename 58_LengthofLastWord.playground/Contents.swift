@@ -31,3 +31,27 @@ func lengthOfLastWord(_ s: String) -> Int {
         return 0
     }
 }
+
+
+class Solution {
+    func lengthOfLastWord(_ s: String) -> Int {
+        var wordStarted = false
+        var index = 0
+        for i in stride(from: s.count - 1, through: 0, by: -1) {
+            if s[s.index(s.startIndex, offsetBy: i)] == " " {
+                if wordStarted {
+                    return index
+                }
+                continue
+            } else {
+                wordStarted = true
+                index += 1
+               
+            }
+        }
+        return index
+    }
+}
+
+
+Solution().lengthOfLastWord("Hello World")

@@ -37,3 +37,27 @@ func mySqrt(_ x: Int) -> Int {
     }
     return mid
 }
+
+
+class Solution {
+    func mySqrt(_ x: Int) -> Int {
+        if x == 0 { return 0 }
+        if x < 4 { return 1 }
+
+        var left = 0
+        var right = x + 1 / 2
+        while left < right {
+            let mid = (left + right) / 2
+            let currentVal = mid * mid
+            if currentVal == x {
+                return mid
+            } else if currentVal > x {
+                right = mid - 1
+            } else {
+                left = mid + 1
+            }
+        }
+
+        return left * left > x ? left - 1 : left
+    }
+}

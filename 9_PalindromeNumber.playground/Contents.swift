@@ -27,3 +27,25 @@ func isPalindrome(_ x: Int) -> Bool {
 }
 
 isPalindrome(121)
+
+
+class Solution {
+    func isPalindrome(_ x: Int) -> Bool {
+    var originalx = x
+    var x = x
+    if x < 0 {
+        return false
+    }
+    
+    if x < 10 {
+        return true
+    }
+    var reversed = 0
+    while (x > 0) {
+        let temp = x % 10
+        reversed = temp + (reversed * 10)
+        x /= 10
+    }
+    return originalx == reversed
+    }
+}

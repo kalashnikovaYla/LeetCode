@@ -1,5 +1,22 @@
 import Foundation
 
+/*
+ Given a string s, return the longest palindromic substring in s.
+
+  
+
+ Example 1:
+
+ Input: s = "babad"
+ Output: "bab"
+ Explanation: "aba" is also a valid answer.
+ Example 2:
+
+ Input: s = "cbbd"
+ Output: "bb"
+
+ */
+
 class Solution {
     func longestPalindrome(_ s: String) -> String {
     // Consider every index as center and expand to find longest palindrome at that index.

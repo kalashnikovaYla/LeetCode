@@ -373,7 +373,7 @@ func doSomething11() {
         print("Final counter value: \(finalValue)")
     }
 }
-doSomething11()
+//doSomething11()
 
 func doSomething12() {
     print("2")
@@ -611,3 +611,44 @@ func doSomething21() {
 }
 //doSomething21()
 //?
+
+struct Adverb {
+    let id: String
+}
+func getAdverb(id: String, completion: @escaping(Adverb) -> Void) {
+    sleep(1)
+    completion(Adverb(id: id))
+}
+func getAdverbs(ids: [String],  completion: @escaping([Adverb]) -> Void) {
+    let group = DispatchGroup()
+    let lock = NSLock()
+    
+    var array: [Adverb?] = Array(repeating: nil, 
+                                 count: ids.count)
+
+    for (index, id) in ids.enumerated() {
+        group.enter()
+        getAdverb(id: id) { adverb in
+           // lock.lock()
+            array[index] = adverb
+           // lock.unlock()
+            group.leave()
+        }
+    }
+    group.notify(queue: .main) {
+        let nonNilArray = array.compactMap { $0 }
+        completion(nonNilArray)
+    }
+}
+
+func doSomething22() {
+    let range = 1...25
+    let ids = range.map {
+        String($0)
+    }
+    
+    getAdverbs(ids: ids) { array in
+        print(array)
+    }
+}
+//doSomething22()

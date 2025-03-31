@@ -222,7 +222,7 @@ func processArray(_ array: [Int] ) -> [Int] {
 func doSomething13() {
     var a = 14
     var b = 2
-    let clouser: () -> Int = { [a,b] in
+    let clouser: () -> Int = { [a,b] in //если бы захвата значений не было, то было бы 11 [a,b] in
         return a + b
     }
     a = 5
@@ -284,7 +284,7 @@ func doSomething18() {
     var names = [String]()
     names.append("Marina")
     let example1 = names.popLast()
-    let example2 = names.popLast()
+    let example2 = names.popLast() //@inlinable public mutating func popLast() -> Element?
     print(example2)
 }
 //doSomething18() //nil
@@ -293,7 +293,7 @@ func doSomething20() {
     var names = [String]()
     names.append("Maria")
     let example1 = names.removeLast()
-    let example2 = names.removeLast()
+    let example2 = names.removeLast() // @inlinable public mutating func removeLast() -> Element
     print(example2)
 }
 //doSomething20() // Swift/RangeReplaceableCollection.swift:867: Fatal error: Can't remove last element from an empty collection Ошибка в рантайм
@@ -390,4 +390,4 @@ func doSomething26() {
         let test = value
     }
 }
-//doSomething26() //String: String 
+//doSomething26() //String: String

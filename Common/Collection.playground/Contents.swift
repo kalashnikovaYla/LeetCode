@@ -54,6 +54,7 @@ let subString = greeting[startIndex...endIndex] // "World"
 
 let substring = greeting.prefix(5) // "Hello"
 
+
 var mutableString = "Hello, World!"
 mutableString = mutableString.replacingOccurrences(of: "World", with: "Swift")
 
@@ -74,15 +75,27 @@ let fruits = csv.components(separatedBy: ",") // ["apple", "banana", "cherry"]
 let repeatedString = String(repeating: "Hello ", count: 3)
 print(repeatedString)
 
+//MARK: - NSString
+let s = (substring as NSString).substring(to: 2)
+let objcStr = greeting as NSString
+let objcRange = objcStr.range(of: "Hello")
+print("NSString range length: \(objcRange.length), location: \(objcRange.location)")
+
+
 
 //MARK: - Array
  
 var numbers = [1, 2, 3, 4, 5]
 numbers.removeLast()
 numbers.remove(at: 0)
-numbers.removeAll()
+//numbers.removeAll()
 
 let sortedNumbers = numbers.sorted() // Возвращает отсортированный массив
 numbers.sort() // Сортирует массив на месте
 let sliced = numbers[1..<3] // Получает срез массива
 numbers[1...2] = [10, 20]
+
+var array = [1,2,3,4,5]
+let newEl = [-1, 0]
+array.insert(contentsOf: newEl, at: 0)
+print(array) //[-1, 0, 1, 2, 3, 4, 5]

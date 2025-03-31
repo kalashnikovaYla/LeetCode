@@ -47,6 +47,7 @@ class Solution {
         
         while right < sArray.count {
             let char = sArray[right]
+            print(char)
             windowCounts[char, default: 0] += 1
             
             if let count = dictT[char], count == windowCounts[char] {

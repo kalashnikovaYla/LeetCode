@@ -5,8 +5,8 @@ import Foundation
 //MARK: - Set
 
 
-var setA: Set<Int> = [1, 2, 3]
-var setB: Set<Int> = [3, 4, 5]
+var setA: Set<Int> = [1, 2, 3, 5]
+var setB: Set<Int> = [1, 2, 3]
 
 // Добавление элемента
 setA.insert(4)

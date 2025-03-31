@@ -15,12 +15,17 @@ class ClassExample8: ProtocolExample8 {
     func doSomething() {
         print("Required Implementation")
     }
+    func doSomething2() {
+        print("Do something 2")
+    }
 }
 
 let first = ClassExample8()
 let second: ProtocolExample8 = ClassExample8()
-//first.doSomething()
-//second.doSomething()
+first.doSomething()
+second.doSomething()
+//second.doSomething2()
+
 /*
  Required Implementation
  Default Implementation
@@ -29,6 +34,13 @@ let second: ProtocolExample8 = ClassExample8()
  protocol ProtocolExample8 {
       func doSomething()
  }
+
+ let second: ProtocolExample8 = ClassExample8()
+ second.doSomething2()
+ Value of type 'any ProtocolExample8' has no member 'doSomething2' - будет ошибка компиляции
+
+ В этом случае `second` объявлена как переменная типа `ProtocolExample8`, но ссылается на экземпляр `ClassExample8`. Это означает, что `second` может использовать только те методы, которые доступны через протокол `ProtocolExample8`. Однако, так как `ClassExample8` реализует все требования протокола, вы все равно можете вызывать метод `doSomething()` через `second`, и будет использована реализация, определенная в `ClassExample8`.
+
  */
 
 //MARK: - 2
@@ -71,10 +83,12 @@ struct S: P {
     }
 }
 
-class C: P {}
+class C: P {
+    
+}
 let objc1: P = S()
 let objc2: P = C()
-//objc1.showMessage() //Struct
+objc1.showMessage() //Struct
 //objc2.showMessage() //extension
 /*
  Если убрать из протокола метод func showMessage() - то будет
@@ -163,3 +177,9 @@ let brother = Brother()
 //brother.buyGame() //AssassinsCreed
 let sister: GameProtocol = Sister()
 sister.buyGame() //Barbie
+
+struct Mother: GameProtocol {
+    func buyGame() {
+        
+    }
+}

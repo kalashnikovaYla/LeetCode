@@ -16,7 +16,7 @@ func greet() {
 
 
 class Animal {
-     var name = "Leo"
+    var name = "Leo"
 }
 var animal = Animal()
 animal.name = "Tiger"
@@ -48,19 +48,6 @@ func doSomething2() {
  1: o
  */
 
-func doSomething3() {
-    let queue = DispatchQueue(label: "example", attributes: .concurrent)
-    var result = [Int]()
-    for i in 0..<5 {
-        queue.async {
-            result.append(i)
-        }
-    }
-    queue.async {
-        print(result)
-    }
-}
-//doSomething3() //[0, 1, 2, 3, 4]
 
 func doSomething4() {
     let roles = ["Developer" : "Anna", "Manager" : "Bob"]
@@ -130,6 +117,7 @@ func doSomething7() {
     print("\(a ?? 5) \(b ?? 7)")
 }
 //doSomething7() // 10 7
+//b? = 10 - если так: то значение не изменится. но если убрать ? или инициализировать неопциональным значением var b: Int? = 5 - то обновиться
 
 
 func doSomething8() {

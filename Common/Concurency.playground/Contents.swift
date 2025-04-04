@@ -652,3 +652,17 @@ func doSomething22() {
     }
 }
 //doSomething22()
+
+func doSomething23() {
+    let queue = DispatchQueue(label: "example", attributes: .concurrent)
+    var result = [Int]()
+    for i in 0..<5 {
+        queue.async {
+            result.append(i)
+        }
+    }
+    queue.async {
+        print(result)
+    }
+}
+doSomething23() //Порядок и результат не гарантирован 

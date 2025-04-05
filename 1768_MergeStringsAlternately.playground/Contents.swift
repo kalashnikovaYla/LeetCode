@@ -13,6 +13,7 @@
  word1:  a   b   c
  word2:    p   q   r
  merged: a p b q c r
+ 
  Example 2:
 
  Input: word1 = "ab", word2 = "pqrs"
@@ -24,7 +25,6 @@
  */
 
 func mergeAlternately(_ word1: String, _ word2: String) -> String {
-    let minCount = min(word1.count, word2.count)
     var res = ""
     var first = 0
     var second = 0
@@ -37,12 +37,15 @@ func mergeAlternately(_ word1: String, _ word2: String) -> String {
     }
     
     if first < word1.count {
-        let sub = word1.index(word1.startIndex, offsetBy: first)...word1.index(word1.startIndex, offsetBy: word1.count - 1)
-        res += word1[sub]
+        let range = word1.index(word1.startIndex, offsetBy: first)...word1.endIndex
+        res += word1[range]
     }
+    
     if second < word2.count {
-        let sub = word1.index(word2.startIndex, offsetBy: second)...word2.index(word2.startIndex, offsetBy: word2.count - 1)
-        res += word2[sub]
+        let range = word2.index(word2.startIndex, offsetBy: first)...word2.endIndex
+        res += word2[range]
     }
     return res
 }
+
+mergeAlternately("abc", "pqr")

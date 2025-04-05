@@ -52,7 +52,7 @@ let endIndex = greeting.index(greeting.endIndex, offsetBy: -1)
 let subString = greeting[startIndex...endIndex] // "World"
 
 
-let substring = greeting.prefix(5) // "Hello"
+let substring = greeting.prefix(5) // "Hello" 'Substring'
 
 
 var mutableString = "Hello, World!"
@@ -74,6 +74,13 @@ let fruits = csv.components(separatedBy: ",") // ["apple", "banana", "cherry"]
 
 let repeatedString = String(repeating: "Hello ", count: 3)
 print(repeatedString)
+
+var res = ""
+let word1 = "abc"
+let rangeExample = word1.index(word1.startIndex, offsetBy: 0)...word1.endIndex
+res += word1[rangeExample] //String.SubSequence
+
+res.append(word1[word1.index(word1.startIndex, offsetBy: 0)]) ///Character
 
 //MARK: - NSString
 let s = (substring as NSString).substring(to: 2)

@@ -59,3 +59,5 @@ class Solution {
         return String(str1.prefix(divisorLength))
     }
 }
+
+Solution().gcdOfStrings("ABABABAB", "ABAB")

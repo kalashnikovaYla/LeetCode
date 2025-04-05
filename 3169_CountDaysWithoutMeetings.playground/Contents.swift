@@ -61,14 +61,16 @@ class Solution {
     }
 }
 
-//memory 
+Solution().countDays(5, [[2,4],[1,3]])
+
+//memory
 func countDays(_ days: Int, _ meetings: [[Int]]) -> Int {
     let meetings = meetings.sorted { $0[0]<$1[0] }
     var result = days
     var prevEnd = 0
     for meeting in meetings {
-        let start = max(prevEnd+1, meeting[0])
-        result -= max(0, meeting[1]+1-start)
+        let start = max(prevEnd + 1, meeting[0])
+        result -= max(0, meeting[1] + 1 - start)
         prevEnd = max(prevEnd, meeting[1])
     }
     return result

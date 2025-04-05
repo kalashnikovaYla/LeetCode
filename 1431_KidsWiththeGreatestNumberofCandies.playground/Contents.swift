@@ -17,6 +17,7 @@
  - Kid 3, they will have 5 + 3 = 8 candies, which is the greatest among the kids.
  - Kid 4, they will have 1 + 3 = 4 candies, which is not the greatest among the kids.
  - Kid 5, they will have 3 + 3 = 6 candies, which is the greatest among the kids.
+ 
  Example 2:
 
  Input: candies = [4,2,1,1,2], extraCandies = 1

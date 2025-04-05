@@ -38,6 +38,7 @@
  Meetings are scheduled for all working days.
  */
 
+//миним рантайм
 class Solution {
     func countDays(_ days: Int, _ meetings: [[Int]]) -> Int {
         var meetings = meetings.sorted{$0[0]<$1[0]}
@@ -60,50 +61,30 @@ class Solution {
     }
 }
 
-func countAvailableDays(totalDays: Int, meetings: [[Int]]) -> Int {
-    var bookedDays = Set<Int>()
-     
+//memory 
+func countDays(_ days: Int, _ meetings: [[Int]]) -> Int {
+    let meetings = meetings.sorted { $0[0]<$1[0] }
+    var result = days
+    var prevEnd = 0
     for meeting in meetings {
-        let start = meeting[0]
-        let end = meeting[1]
-        for day in start...end {
-            bookedDays.insert(day)
-        }
+        let start = max(prevEnd+1, meeting[0])
+        result -= max(0, meeting[1]+1-start)
+        prevEnd = max(prevEnd, meeting[1])
     }
-    
-    /*
-     var availableDaysCount = 0
-     for day in 1...totalDays {
-         if !bookedDays.contains(day) {
-             availableDaysCount += 1
-         }
-     }
-     */
-    
-    return totalDays - bookedDays.count
+    return result
 }
 
- 
-let days = 10
-let meetings = [[5, 7], [1, 3], [9, 10]]
-let availableDays = countAvailableDays(totalDays: days, meetings: meetings)
-print(availableDays)
+//Time Limit Exceeded
+class Solution2 {
+    func countDays(_ days: Int, _ meetings: [[Int]]) -> Int {
+        var rangeSet = Set<Int>()
+        for meeting in meetings {
+            let range = meeting[0]...meeting[1]
+            for day in range {
+                rangeSet.insert(day)
+            }
 
-
-func minSubArrayLen(target: Int, nums: [Int]) -> Int {
-    var left = 0
-    var sum = 0
-    var minLength = nums.count + 1
-    
-    for right in 0..<nums.count {
-        sum += nums[right]
-        
-        while sum >= target {
-            minLength = min(minLength, right - left + 1)
-            sum -= nums[left]
-            left += 1
         }
+        return days - rangeSet.count
     }
-    
-    return minLength == nums.count + 1 ? 0 : minLength
 }

@@ -7,6 +7,13 @@
 
  Your solution must use only constant extra space.
 
+ Дано 1-индексный массив целых чисел, который уже отсортирован в неубывающем порядке, найдите два числа, которые в сумме дают определенное целевое число. Пусть эти два числа будут numbers[index1] и numbers[index2], где 1 <= index1 < index2 <= numbers.length.
+
+ Верните индексы двух чисел, index1 и index2, сложенные на единицу, как целочисленный массив [index1, index2] длины 2.
+
+ Тесты генерируются таким образом, что существует ровно одно решение. Вы не можете использовать один и тот же элемент дважды.
+
+ Ваше решение должно использовать только постоянное дополнительное пространство.
   
 
  Example 1:
@@ -24,6 +31,7 @@
  */
 
 
+//Массив отсортирован в неубывающем порядке, так что бинарный поиск
 class Solution {
     func twoSum(_ numbers: [Int], _ target: Int) -> [Int] {
         var left = 0
@@ -32,7 +40,6 @@ class Solution {
         while left < right {
             let sum = numbers[left] + numbers[right]
             if sum == target {
-                
                 return [left + 1, right + 1]
             } else if sum < target {
                 left += 1

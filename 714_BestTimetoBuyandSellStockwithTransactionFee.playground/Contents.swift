@@ -59,7 +59,7 @@ func maxProfit(_ prices: [Int], _ fee: Int) -> Int {
 
     return cash[n-1]
 }
-maxProfit([1,3,2,8,4,9], 2)
+//maxProfit([1,3,2,8,4,9], 2)
  
 func maxProfit2(_ prices: [Int], _ fee: Int) -> Int {
     
@@ -73,9 +73,9 @@ func maxProfit2(_ prices: [Int], _ fee: Int) -> Int {
     for price in prices {
         let previous = result
         result = max(result, hold + price - fee)
-        hold = max(hold, previous - price)
+        hold = max(hold, previous - price) //Это для покупки новой акции, 5 - 4
     }
     
     return result
 }
-maxProfit2([1,3,2,8,4,9], 2)
+maxProfit2([1,3,8,4,9], 2)

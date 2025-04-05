@@ -77,7 +77,7 @@ print(repeatedString)
 
 var res = ""
 let word1 = "abc"
-let rangeExample = word1.index(word1.startIndex, offsetBy: 0)...word1.endIndex
+let rangeExample = word1.index(word1.startIndex, offsetBy: 0)..<word1.endIndex
 res += word1[rangeExample] //String.SubSequence
 
 res.append(word1[word1.index(word1.startIndex, offsetBy: 0)]) ///Character
@@ -106,3 +106,15 @@ var array = [1,2,3,4,5]
 let newEl = [-1, 0]
 array.insert(contentsOf: newEl, at: 0)
 print(array) //[-1, 0, 1, 2, 3, 4, 5]
+
+
+//MARK: Int, Double
+
+let number: Double = 16.0
+let squareRoot = sqrt(number)
+print("Квадратный корень из \(number) равен \(squareRoot)")
+
+let base: Double = 2.0
+let exponent: Double = 3.0
+let power = pow(base, exponent)
+print("\(base) в степени \(exponent) равно \(power)")

@@ -37,15 +37,15 @@ func mergeAlternately(_ word1: String, _ word2: String) -> String {
     }
     
     if first < word1.count {
-        let range = word1.index(word1.startIndex, offsetBy: first)...word1.endIndex
+        let range = word1.index(word1.startIndex, offsetBy: first)..<word1.endIndex
         res += word1[range]
     }
     
     if second < word2.count {
-        let range = word2.index(word2.startIndex, offsetBy: first)...word2.endIndex
+        let range = word2.index(word2.startIndex, offsetBy: first)..<word2.endIndex
         res += word2[range]
     }
     return res
 }
 
-mergeAlternately("abc", "pqr")
+mergeAlternately("abc", "pqrk")

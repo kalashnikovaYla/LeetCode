@@ -107,6 +107,7 @@ class Solution {
  4   (0 1 0 0)
         ↑   ↑
  The above arrows point to positions where the corresponding bits are different.
+
  Example 2:
 
  Input: x = 3, y = 1
@@ -119,36 +120,17 @@ class Solution {
 func hammingDistance(_ x: Int, _ y: Int) -> Int {
     let xorResult = x ^ y
     
-    // Счетчик для единиц
     var distance = 0
     
-    // Подсчитываем количество единиц в xorResult
     var number = xorResult
     while number > 0 {
-        distance += number & 1  // Проверяем последний бит
-        number >>= 1            // Сдвигаем число вправо
+        distance += number & 1
+        number >>= 1
     }
     
     return distance
 }
 
-
-func hammingDistance2(_ x: Int, _ y: Int) -> Int {
-    var num1 = UInt(x)
-    var num2 = UInt(y)
-    
-    var diff = 0
-    while num1 != 0 || num2 != 0 {
-        if (num1 & 1) != (num2 & 1) {
-            diff += 1
-        }
-        
-        num1 >>= 1
-        num2 >>= 1
-    }
-    
-    return diff
-}
 
 
 /*
@@ -171,6 +153,7 @@ func addBinary(_ a: String, _ b: String) -> String {
     var carry = 0
 
     while aLength >= 0 || bLength >= 0 {
+        //не забываем учесть carry
         var totalSum = carry
         if aLength >= 0 {
             totalSum += Int(String(a[a.index(a.startIndex, offsetBy: aLength)]))!
@@ -180,6 +163,8 @@ func addBinary(_ a: String, _ b: String) -> String {
             totalSum += Int(String(b[b.index(b.startIndex, offsetBy: bLength)]))!
             bLength -= 1
         }
+        
+        //добавляем элемент именно в начало 
         result = String(totalSum % 2) + result
         carry = totalSum / 2
     }

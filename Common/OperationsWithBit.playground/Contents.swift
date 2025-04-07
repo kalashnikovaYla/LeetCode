@@ -48,3 +48,144 @@ if flags & 0b0000_0001 != 0 {
 } else {
     print("Первый флаг не установлен")
 }
+
+func fromIntToDecimal(nums: [Int]) -> Int {
+    var decimal = 0
+    var base = 1
+    
+    for digit in nums {
+        if digit != 0 && digit != 1 {
+            return 0
+        }
+    }
+    
+    for digit in nums.reversed() {
+        if digit == 1 {
+            decimal += base
+        }
+        base *= 2
+    }
+    
+    return decimal
+}
+
+/*
+ Reverse bits of a given 32 bits unsigned integer.
+ Input: n = 00000010100101000001111010011100
+ Output:    964176192 (00111001011110000010100101000000)
+ Explanation: The input binary string 00000010100101000001111010011100 represents the unsigned integer 43261596, so return 964176192 which its binary representation is 00111001011110000010100101000000.
+ 
+ //разворот (обратный порядок) битов 32-битного целого числа `n`
+ */
+
+
+class Solution {
+   func reverseBits(_ n: Int) -> Int {
+       var n = n
+       var reversed: Int = 0
+       for i in 0..<32 {
+           // Сдвигаем reversed влево на 1 бит
+           reversed <<= 1
+           // Добавляем последний бит n (проверьте его с помощью побитовой операции &)
+           reversed |= (n & 1)
+           // Сдвигаем n вправо на 1 бит, чтобы обработать следующий бит
+           n >>= 1
+       }
+       return reversed
+   }
+}
+
+/*
+ The Hamming distance between two integers is the number of positions at which the corresponding bits are different.
+
+ Given two integers x and y, return the Hamming distance between them.
+ 
+ Input: x = 1, y = 4
+ Output: 2
+ Explanation:
+ 1   (0 0 0 1)
+ 4   (0 1 0 0)
+        ↑   ↑
+ The above arrows point to positions where the corresponding bits are different.
+ Example 2:
+
+ Input: x = 3, y = 1
+ Output: 1
+
+ */
+
+
+ 
+func hammingDistance(_ x: Int, _ y: Int) -> Int {
+    let xorResult = x ^ y
+    
+    // Счетчик для единиц
+    var distance = 0
+    
+    // Подсчитываем количество единиц в xorResult
+    var number = xorResult
+    while number > 0 {
+        distance += number & 1  // Проверяем последний бит
+        number >>= 1            // Сдвигаем число вправо
+    }
+    
+    return distance
+}
+
+
+func hammingDistance2(_ x: Int, _ y: Int) -> Int {
+    var num1 = UInt(x)
+    var num2 = UInt(y)
+    
+    var diff = 0
+    while num1 != 0 || num2 != 0 {
+        if (num1 & 1) != (num2 & 1) {
+            diff += 1
+        }
+        
+        num1 >>= 1
+        num2 >>= 1
+    }
+    
+    return diff
+}
+
+
+/*
+ Given two binary strings a and b, return their sum as a binary string.
+
+ Example 1:
+
+ Input: a = "11", b = "1"
+ Output: "100"
+ 
+ Example 2:
+ 
+ Input: a = "1010", b = "1011"
+ Output: "10101"
+ 
+ */
+func addBinary(_ a: String, _ b: String) -> String {
+    var result = ""
+    var aLength = a.count - 1, bLength = b.count - 1
+    var carry = 0
+
+    while aLength >= 0 || bLength >= 0 {
+        var totalSum = carry
+        if aLength >= 0 {
+            totalSum += Int(String(a[a.index(a.startIndex, offsetBy: aLength)]))!
+            aLength -= 1
+        }
+        if bLength >= 0 {
+            totalSum += Int(String(b[b.index(b.startIndex, offsetBy: bLength)]))!
+            bLength -= 1
+        }
+        result = String(totalSum % 2) + result
+        carry = totalSum / 2
+    }
+
+    if carry > 0 {
+        result = String(1) + result
+    }
+    return result
+}

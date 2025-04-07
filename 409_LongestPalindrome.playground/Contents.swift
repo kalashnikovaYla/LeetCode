@@ -32,9 +32,7 @@ class Solution {
         var length = 0
         var hasOddCount = false
         
-        
         for count in charCount.values {
-             
             if count % 2 == 0 {
                 length += count
             } else {
@@ -42,7 +40,6 @@ class Solution {
                 hasOddCount = true
             }
         }
-        
         
         if hasOddCount {
             length += 1

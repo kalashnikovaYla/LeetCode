@@ -39,7 +39,6 @@ class Solution {
                 return mid
             }
             
-            
             if nums[left] <= nums[mid] {
                 if nums[left] <= target && target < nums[mid] {
                     right = mid - 1
@@ -55,7 +54,8 @@ class Solution {
             }
         }
         
-        
         return -1
     }
 }
+
+Solution().search([4,5,6,7,0,1,2], 0)

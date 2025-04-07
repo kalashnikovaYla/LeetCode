@@ -17,7 +17,7 @@
 
  Input: x = 2.00000, n = -2
  Output: 0.25000
- Explanation: 2-2 = 1/22 = 1/4 = 0.25
+ Explanation: 2(-2) = 1/2(2) = 1/4 = 0.25
 
  Этот метод, известный как "быстрое возведение в степень", позволяет вычислять степень гораздо быстрее, чем просто умножать число само на себя \( n \) раз, особенно при больших значениях \( n \).
  
@@ -40,23 +40,21 @@ func myPow(_ x: Double, _ n: Int) -> Double {
         return 1.0
     }
     
-    
-    let (base, exponent) = n > 0 ? (x, n) : (1 / x, -n)
+    // n < 0 - делаем экспоненту положительной
+    var (base, exponent) = n > 0 ? (x, n) : (1 / x, -n)
     
     var result = 1.0
-    var currentProduct = base //9
-    var currentExponent = exponent //2 //3
     
-    while currentExponent > 0 {
-        if currentExponent % 2 == 1 {
-            result *= currentProduct // 1 * 81
+    while exponent > 0 {
+        if exponent % 2 == 1 {
+            result *= base // 1 * 81
         }
-        currentProduct *= currentProduct//81
-        currentExponent /= 2
+        base *= base//81
+        exponent /= 2
     }
     
     return result
 }
  
-myPow(9.0, 2)
+myPow(2.0, 3)
  

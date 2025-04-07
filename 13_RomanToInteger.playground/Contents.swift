@@ -72,7 +72,6 @@ class Solution {
                 total += value
             }
         }
-        
         return total
     }
 }

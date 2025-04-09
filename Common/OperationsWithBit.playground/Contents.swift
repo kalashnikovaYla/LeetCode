@@ -174,3 +174,14 @@ func addBinary(_ a: String, _ b: String) -> String {
     }
     return result
 }
+
+//числа могут встретится 1 или 2 раза, но не более того. нужно вывести то число, которое встречается только 1 раз
+///x ^ x = 0
+///4  ^ 4 = 0
+func singleNumber(_ nums: [Int]) -> Int {
+    var result = 0
+    for num in nums {
+        result ^= num
+    }
+    return result
+}

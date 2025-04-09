@@ -38,7 +38,7 @@ class Solution {
         return result
     }
 }
-
+Solution().strStr("leetcodee", "dee")
 
 func strStr(_ haystack: String, _ needle: String) -> Int {
     var needleCount = needle.count

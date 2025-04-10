@@ -11,6 +11,7 @@
  Input: x = 4
  Output: 2
  Explanation: The square root of 4 is 2, so we return 2.
+
  Example 2:
 
  Input: x = 8
@@ -37,7 +38,7 @@ func mySqrt(_ x: Int) -> Int {
     }
     return mid
 }
-
+mySqrt(8)
 
 class Solution {
     func mySqrt(_ x: Int) -> Int {
@@ -61,3 +62,4 @@ class Solution {
         return left * left > x ? left - 1 : left
     }
 }
+Solution().mySqrt(8)

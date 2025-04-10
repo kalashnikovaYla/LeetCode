@@ -82,6 +82,33 @@ res += word1[rangeExample] //String.SubSequence
 
 res.append(word1[word1.index(word1.startIndex, offsetBy: 0)]) ///Character
 
+
+
+//Удаление на месте
+func clearDigits(s: inout String) {
+    var index = s.startIndex
+    
+    while index < s.endIndex {
+        
+        if s[index].isNumber {
+            if index > s.startIndex {
+                let previousIndex = s.index(before: index)
+                s.remove(at: previousIndex)
+                index = previousIndex
+            }
+            
+            s.remove(at: index)
+        } else {
+            index = s.index(after: index)
+        }
+    }
+}
+var ss =  "cb34"
+clearDigits(s: &ss)
+
+
+
+
 //MARK: - NSString
 let s = (substring as NSString).substring(to: 2)
 let objcStr = greeting as NSString

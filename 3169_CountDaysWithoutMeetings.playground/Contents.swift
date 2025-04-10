@@ -5,7 +5,8 @@
  Return the count of days when the employee is available for work but no meetings are scheduled.
  Note: The meetings may overlap.
 
-  
+ Свободные дни считаются как (meeting[0] - lastDay - 1). Здесь вычитание 1 происходит для того, чтобы не учитывать сам день начала встречи как свободный. Например, если последняя встреча закончилась в день 3, а следующая начинается в день 5, то между ними есть только день 4, и мы хотим его учесть как свободный. Поэтому мы вычитаем 1.
+
 
  Example 1:
 

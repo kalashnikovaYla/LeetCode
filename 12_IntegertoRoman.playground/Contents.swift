@@ -31,6 +31,7 @@
    40 = XL as 10 (X) less of 50 (L)
     9 = IX as 1 (I) less of 10 (X)
  Note: 49 is not 1 (I) less of 50 (L) because the conversion is based on decimal places
+ 
  Example 2:
 
  Input: num = 58
@@ -41,10 +42,10 @@
 
  50 = L
   8 = VIII
+
  Example 3:
 
  Input: num = 1994
-
  Output: "MCMXCIV"
 
  Explanation:
@@ -80,7 +81,22 @@ class Solution {
 
  
 func intToRoman(_ num: Int) -> String {
-    let romanValues: [(value: Int, roman: String)] = [(1000, "M"), (900, "CM"), (500, "D"), (400, "CD"), (100, "C"), (90, "XC") ,(50, "L"), (40, "XL"), (10, "X"), (9, "IX"), (5, "V"), (4, "IV"), (1, "I")]
+    let romanValues: [(value: Int, roman: String)] = [
+        (1000, "M"),
+        (900, "CM"),
+        (500, "D"),
+        (400, "CD"),
+        (100, "C"),
+        (90, "XC"),
+        (50, "L"),
+        (40, "XL"),
+        (10, "X"),
+        (9, "IX"),
+        (5, "V"),
+        (4, "IV"),
+        (1, "I")
+    ]
+    
     var finalString = ""
     var number = num
     
@@ -93,5 +109,16 @@ func intToRoman(_ num: Int) -> String {
     }
     return finalString
     
+}
+ 
+
+ 
+func intToRoman(num: Int) -> String {
+    var one: [String] = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+    var ten: [String] = ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"]
+    var hundred: [String] = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"]
+    var thousand: [String] = ["", "M", "MM", "MMM", "MMMM"]
+    
+    return thousand[num/1000] + hundred[(num%1000)/100] + ten[(num%100)/10] + one[num%10]
 }
  

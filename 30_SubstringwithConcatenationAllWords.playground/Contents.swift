@@ -6,6 +6,12 @@
  For example, if words = ["ab","cd","ef"], then "abcdef", "abefcd", "cdabef", "cdefab", "efabcd", and "efcdab" are all concatenated strings. "acdbef" is not a concatenated string because it is not the concatenation of any permutation of words.
  Return an array of the starting indices of all the concatenated substrings in s. You can return the answer in any order.
 
+ Вам дана строка s и массив строк words. Все строки words имеют одинаковую длину.
+
+ concatenated string — это строка, которая содержит в точности все строки любой перестановки сцепленных слов.
+
+ Например, если words = ["ab","cd","ef"], то "abcdef", "abefcd", "cdabef", "cdefab", "efabcd" и "efcdab" — это все сцепленные строки. "acdbef" не является сцепленной строкой, поскольку она не является конкатенацией какой-либо перестановки слов.
+ Верните массив начальных индексов всех сцепленных подстрок в s. Вы можете вернуть ответ в любом порядке.
   
 
  Example 1:
@@ -16,8 +22,8 @@
 
  Explanation:
 
- The substring starting at 0 is "barfoo". It is the concatenation of ["bar","foo"] which is a permutation of words.
- The substring starting at 9 is "foobar". It is the concatenation of ["foo","bar"] which is a permutation of words.
+ Подстрока, начинающаяся с 0, — это «barfoo». Это конкатенация [«bar», «foo»], которая является перестановкой слов.
+ Подстрока, начинающаяся с 9, — это «foobar». Это конкатенация [«foo», «bar»], которая является перестановкой слов.
 
  Example 2:
 

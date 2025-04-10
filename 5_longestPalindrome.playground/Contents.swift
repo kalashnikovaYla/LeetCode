@@ -19,14 +19,16 @@ import Foundation
 
 class Solution {
     func longestPalindrome(_ s: String) -> String {
-    // Consider every index as center and expand to find longest palindrome at that index.
-    // Check for both even length palindrome & odd length palindrome
+    
         var string = Array(s)
         var longestPalindrome: (startIdx: Int, endIdx: Int) = (-1, -1)
+        
         for idx in string.indices {
             let oddPalindrome = checkPalindrome(string: string, startIdx: idx, endIdx: idx)
             let evenPalindrome = checkPalindrome(string: string, startIdx: idx, endIdx: idx + 1)
+            
             var maxPalindrome = oddPalindrome
+            
             if evenPalindrome.endIdx - evenPalindrome.startIdx >= oddPalindrome.endIdx - oddPalindrome.startIdx {
                 maxPalindrome = evenPalindrome
             }
@@ -38,7 +40,11 @@ class Solution {
     }
 
     func checkPalindrome(string: [Character], startIdx: Int, endIdx: Int) -> (startIdx: Int, endIdx: Int) {
-        guard startIdx >= 0, endIdx < string.count, string[startIdx] == string[endIdx] else { return (startIdx, startIdx) }
+        
+        guard startIdx >= 0, endIdx < string.count, string[startIdx] == string[endIdx]
+        else {
+            return (startIdx, startIdx)
+        }
         var startIdx = startIdx
         var endIdx = endIdx
         while startIdx - 1 >= 0, endIdx + 1 < string.count, string[startIdx - 1] == string[endIdx + 1] {

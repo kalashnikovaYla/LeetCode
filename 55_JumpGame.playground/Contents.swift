@@ -10,6 +10,7 @@
  Input: nums = [2,3,1,1,4]
  Output: true
  Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.
+ 
  Example 2:
 
  Input: nums = [3,2,1,0,4]
@@ -21,7 +22,10 @@ class Solution {
         var goalIndex = nums.count - 1
         for i in stride(from: goalIndex - 1, through: 0, by: -1) {
             // if we reached the first one, the first one can't reach the goal, return false.
-            if i == 0 { return i + nums[i] >= goalIndex }
+            if i == 0 {
+                return i + nums[i] >= goalIndex
+            }
+           
             guard nums[i] != 0 else { continue }
             
             if i + nums[i] >= goalIndex {

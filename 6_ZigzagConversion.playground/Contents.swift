@@ -15,6 +15,8 @@
 
  Input: s = "PAYPALISHIRING", numRows = 3
  Output: "PAHNAPLSIIGYIR"
+ 
+ 
  Example 2:
 
  Input: s = "PAYPALISHIRING", numRows = 4
@@ -24,6 +26,7 @@
  A   L S  I G
  Y A   H R
  P     I
+
  Example 3:
 
  Input: s = "A", numRows = 1
@@ -32,7 +35,6 @@
  */
 
 func convert(_ s: String, _ numRows: Int) -> String {
-    
     if numRows <= 1 || numRows >= s.count {
         return s
     }
@@ -41,7 +43,6 @@ func convert(_ s: String, _ numRows: Int) -> String {
     
     var currentRow = 0
     var goingDown = false
-    
     
     for char in s {
         rows[currentRow].append(char)
@@ -60,6 +61,6 @@ func convert(_ s: String, _ numRows: Int) -> String {
 
  
 let input = "PAYPALISHIRING"
-let numRows = 3
+let numRows = 4
 let output = convert(input, numRows)
 print(output)  // Output: "PAHNAPLSIIGYIR"

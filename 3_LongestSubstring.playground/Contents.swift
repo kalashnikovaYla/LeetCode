@@ -1,4 +1,4 @@
-import Foundation
+
 
 /*
  Given a string s, find the length of the longest substring without duplicate characters.
@@ -10,16 +10,19 @@ import Foundation
  Input: s = "abcabcbb"
  Output: 3
  Explanation: The answer is "abc", with the length of 3.
+ 
  Example 2:
 
  Input: s = "bbbbb"
  Output: 1
  Explanation: The answer is "b", with the length of 1.
+
  Example 3:
 
  Input: s = "pwwkew"
  Output: 3
  Explanation: The answer is "wke", with the length of 3.
+
  Notice that the answer must be a substring, "pwke" is a subsequence and not a substring.
  */
 
@@ -34,7 +37,10 @@ func lengthOfLongestSubstring(_ s: String) -> Int {
             left = s.index(after: left)
         }
         charSet.insert(s[right])
-        maxLength = max(maxLength, s.distance(from: left, to: s.index(after: right)))
+        maxLength = max(maxLength, 
+                        s.distance(from: left,
+                                   to: s.index(after: right))
+        )
     }
     
     return maxLength
@@ -53,3 +59,4 @@ func lengthOfLongestSubstring(s: String) -> Int {
     }
     return len
 }
+lengthOfLongestSubstring(s: "pwwkew")

@@ -303,7 +303,9 @@ func findSubstring3(_ s: String, _ words: [String]) -> [Int] {
 
         for i in 0..<words.count {
             let wordIndex = startIndex + i * wordLength
-            let word = String(s[s.index(s.startIndex, offsetBy: wordIndex)..<s.index(s.startIndex, offsetBy: wordIndex + wordLength)])
+            let start = s.index(s.startIndex, offsetBy: wordIndex)
+            let end = s.index(s.startIndex, offsetBy: wordIndex + wordLength)
+            let word = String(s[start..<end])
 
             if let count = wordFrequencyMap[word] {
                 currentWindowMap[word, default: 0] += 1

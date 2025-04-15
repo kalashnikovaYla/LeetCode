@@ -1,12 +1,11 @@
-import UIKit
 
 /*
  
- You are given an integer array prices where prices[i] is the price of a given stock on the ith day.
+ Вам дан целочисленный массив цен, где цены[i] — это цена данной акции на i-й день.
 
- On each day, you may decide to buy and/or sell the stock. You can only hold at most one share of the stock at any time. However, you can buy it then immediately sell it on the same day.
+ Каждый день вы можете решить купить и/или продать акцию. Вы можете держать не более одной акции в любой момент времени. Однако вы можете купить ее, а затем немедленно продать в тот же день.
 
- Find and return the maximum profit you can achieve.
+ Найдите и верните максимальную прибыль, которую вы можете получить.
  
  Example 1:
 

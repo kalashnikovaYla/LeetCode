@@ -1,4 +1,4 @@
-import UIKit
+
 /*
  You are given an array prices where prices[i] is the price of a given stock on the ith day.
 
@@ -37,7 +37,6 @@ func maxProfit(_ prices: [Int]) -> Int {
         } else {
             
             let profit = price - minPrice
-            
             if profit > maxProfit {
                 maxProfit = profit
             }

@@ -1,10 +1,9 @@
 
 /*
- Given an array of positive integers nums, return the maximum possible sum of an strictly increasing subarray in nums.
 
- A subarray is defined as a contiguous sequence of numbers in an array.
+ Дан массив положительных целых чисел nums, вернуть максимально возможную сумму строго возрастающего подмассива в nums.
 
-  
+ Подмассив определяется как непрерывная последовательность чисел в массиве.
 
  Example 1:
 

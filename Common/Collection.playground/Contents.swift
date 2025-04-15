@@ -161,3 +161,28 @@ let words = ["one", "two", "three", "four"]
 ///     // Prints "two: 2"
 ///     // Prints "three: 3"
 ///     // Prints "four: 4"
+
+
+
+func split(s: String) -> [String] {
+    // let words = s.split(separator: " ").map { String($0) }
+    var words = [String]()
+    var currentWord = ""
+    
+     
+    for char in s {
+        if char == " " {
+            if !currentWord.isEmpty {
+                words.append(currentWord)
+                currentWord = ""
+            }
+        } else {
+            currentWord.append(char)
+        }
+    }
+     
+    if !currentWord.isEmpty {
+        words.append(currentWord)
+    }
+    return words
+}

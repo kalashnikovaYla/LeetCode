@@ -9,6 +9,7 @@
 
  Input: s = "()())()"
  Output: ["(())()","()()()"]
+ 
  Example 2:
 
  Input: s = "(a)())()"

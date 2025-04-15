@@ -145,3 +145,19 @@ let base: Double = 2.0
 let exponent: Double = 3.0
 let power = pow(base, exponent)
 print("\(base) в степени \(exponent) равно \(power)")
+
+
+
+//MARK: Zip
+
+//zip zip<Sequence1, Sequence2>
+let words = ["one", "two", "three", "four"]
+///     let numbers = 1...4
+///
+///     for (word, number) in zip(words, numbers) {
+///         print("\(word): \(number)")
+///     }
+///     // Prints "one: 1"
+///     // Prints "two: 2"
+///     // Prints "three: 3"
+///     // Prints "four: 4"

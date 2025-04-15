@@ -47,7 +47,6 @@ func isIsomorphic(_ s: String, _ t: String) -> Bool {
         
         if let mappedChar = sToTMapping[charS] {
             if mappedChar != charT {
-
                 return false
             }
         } else {

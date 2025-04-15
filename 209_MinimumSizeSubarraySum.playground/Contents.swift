@@ -41,3 +41,4 @@ func minSubArrayLen(_ target: Int, _ nums: [Int]) -> Int {
     return minLength == Int.max ? 0 : minLength
 }
 
+minSubArrayLen(7, [2,3,1,2,4,3])

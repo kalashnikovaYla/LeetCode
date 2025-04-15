@@ -379,3 +379,21 @@ func doSomething26() {
     }
 }
 //doSomething26() //String: String
+
+
+func doSomething27() {
+    let value = 8
+    
+    func showValue() {
+        print("show \(value)")
+    }
+    
+    func wrapper(){
+        print("show \(value)")
+        let value = 9
+        showValue()
+    }
+    wrapper()
+}
+
+doSomething27()

@@ -24,13 +24,32 @@
 
 
 func wordPattern(_ pattern: String, _ s: String) -> Bool {
-    let words = s.split(separator: " ").map { String($0) }
+    // let words = s.split(separator: " ").map { String($0) }
+    var words = [String]()
+    var currentWord = ""
+    
+     
+    for char in s {
+        if char == " " {
+            if !currentWord.isEmpty {
+                words.append(currentWord)
+                currentWord = ""
+            }
+        } else {
+            currentWord.append(char)
+        }
+    }
+     
+    if !currentWord.isEmpty {
+        words.append(currentWord)
+    }
+    
     guard words.count == pattern.count else {
         return false
     }
     
     var charToWord: [Character: String] = [:]
-    var wordToChar: [String: Character] = [:]  
+    var wordToChar: [String: Character] = [:]
     
     for (char, word) in zip(pattern, words) {
         if let existingWord = charToWord[char] {
@@ -40,7 +59,7 @@ func wordPattern(_ pattern: String, _ s: String) -> Bool {
         } else {
             charToWord[char] = word
         }
-         
+        
         if let existingChar = wordToChar[word] {
             if existingChar != char {
                 return false

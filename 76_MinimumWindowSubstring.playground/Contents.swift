@@ -88,7 +88,7 @@ class Solution {
     }
 }
 
-Solution().minWindow("APBANC", "ABC")
+
 
 
 
@@ -120,6 +120,7 @@ class Solution2 {
         for rightIndex in 0..<s.count {
             
             let char = sArr[rightIndex]
+            print(char)
             sMap[char, default: 0] += 1
             
             // проверяем, удовлетворяет ли количество символов в tMap количеству символов в sMap
@@ -130,7 +131,7 @@ class Solution2 {
             
             // if you find a new min result then update
             while have == need {
-                
+                print("have == need")
                 // rightIndex - left + 1 = size of current window
                 if rightIndex - leftIndex + 1 < length {
                     length = rightIndex - leftIndex + 1
@@ -158,3 +159,4 @@ class Solution2 {
         return ""
     }
 }
+Solution2().minWindow("APBANC", "ABC")

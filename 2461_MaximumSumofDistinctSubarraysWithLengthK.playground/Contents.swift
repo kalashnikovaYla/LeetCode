@@ -7,7 +7,13 @@
 
  A subarray is a contiguous non-empty sequence of elements within an array.
 
-  
+ Вам дан целочисленный массив nums и целое число k. Найдите максимальную сумму подмассива всех подмассивов nums, которые удовлетворяют следующим условиям:
+
+ Длина подмассива равна k, и
+ Все элементы подмассива различны.
+ Верните максимальную сумму подмассива всех подмассивов, которые удовлетворяют условиям. Если ни один подмассив не удовлетворяет условиям, верните 0.
+
+ Подмассив — это непрерывная непустая последовательность элементов внутри массива.
 
  Example 1:
 
@@ -20,6 +26,7 @@
  - [2,9,9] which does not meet the requirements because the element 9 is repeated.
  - [9,9,9] which does not meet the requirements because the element 9 is repeated.
  We return 15 because it is the maximum subarray sum of all the subarrays that meet the conditions
+
  Example 2:
 
  Input: nums = [4,4,4], k = 3
@@ -39,21 +46,21 @@
 class Solution {
     func maximumSubarraySum(_ nums: [Int], _ k: Int) -> Int {
         var sum = 0
-        var L = 0
+        var left = 0
         var mem = [Int: Int]()
         var maxSum = 0
 
-        for R in 0..<nums.count {
-            let curr = nums[R]
+        for right in 0..<nums.count {
+            let curr = nums[right]
             let storedIdx = mem[curr] ?? -1
-            while L <= storedIdx || R - L >= k {
-                sum -= nums[L]
-                L += 1
+            while left <= storedIdx || right - left >= k {
+                sum -= nums[left]
+                left += 1
             }
             
-            mem[curr] = R
+            mem[curr] = right
             sum += curr
-            if R - L + 1 == k {
+            if right - left + 1 == k {
                 maxSum = max(maxSum, sum)
             }
         }
@@ -61,4 +68,4 @@ class Solution {
     }
 }
 
- 
+Solution().maximumSubarraySum([1,5,4,2,9,9,9], 3)

@@ -46,3 +46,5 @@ func merge(_ nums1: inout [Int], _ m: Int, _ nums2: [Int], _ n: Int) {
         k -= 1
     }
 }
+var ar = [1,2,3,0,0,0]
+merge(&ar, 3, [2,5,6], 3)

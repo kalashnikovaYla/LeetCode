@@ -13,6 +13,8 @@
  rotate 1 steps to the right: [7,1,2,3,4,5,6]
  rotate 2 steps to the right: [6,7,1,2,3,4,5]
  rotate 3 steps to the right: [5,6,7,1,2,3,4]
+ 
+ 
  Example 2:
 
  Input: nums = [-1,-100,3,99], k = 2
@@ -34,3 +36,20 @@ class Solution {
         }
     }
 }
+
+
+func rotate(_ nums: inout [Int], _ k: Int) {
+    let n = nums.count
+    guard n > 0 else { return }
+    let k = k % n
+    
+    if k == 0 { return }
+    
+    let splitIndex = n - k
+    let rightPart = Array(nums[splitIndex..<n])
+    nums.removeSubrange(splitIndex..<n)
+    
+    nums.insert(contentsOf: rightPart, at: 0)
+}
+var nums = [1,2,3,4,5,6,7]
+rotate(&nums, 3)

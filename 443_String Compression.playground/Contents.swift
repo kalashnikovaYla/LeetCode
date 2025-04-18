@@ -12,17 +12,31 @@
  You must write an algorithm that uses only constant extra space.
 
   
+ Дан массив символов chars, сожмите его, используя следующий алгоритм:
 
+ Начните с пустой строки s. Для каждой группы последовательных повторяющихся символов в chars:
+
+ Если длина группы равна 1, добавьте символ к s.
+ В противном случае добавьте символ, за которым следует длина группы.
+
+ Сжатая строка s не должна возвращаться отдельно, а вместо этого должна храниться во входном массиве символов chars. Обратите внимание, что длина группы, которая составляет 10 или больше, будет разделена на несколько символов в chars.
+
+ После того, как вы закончите изменять входной массив, верните новую длину массива.
+
+ Вы должны написать алгоритм, который использует только постоянное дополнительное пространство.
+ 
  Example 1:
 
  Input: chars = ["a","a","b","b","c","c","c"]
  Output: Return 6, and the first 6 characters of the input array should be: ["a","2","b","2","c","3"]
  Explanation: The groups are "aa", "bb", and "ccc". This compresses to "a2b2c3".
+
  Example 2:
 
  Input: chars = ["a"]
  Output: Return 1, and the first character of the input array should be: ["a"]
  Explanation: The only group is "a", which remains uncompressed since it's a single character.
+
  Example 3:
 
  Input: chars = ["a","b","b","b","b","b","b","b","b","b","b","b","b"]
@@ -31,24 +45,22 @@
  */
 
 func compress(_ chars: inout [Character]) -> Int {
-    var writeIndex = 0  // Index to write the compressed data
-    var readIndex = 0   // Index to read the characters
+    var writeIndex = 0
+    var readIndex = 0
     
     while readIndex < chars.count {
         let currentChar = chars[readIndex]
         var count = 0
         
-        // Count the number of consecutive characters
         while readIndex < chars.count && chars[readIndex] == currentChar {
             readIndex += 1
             count += 1
         }
         
-        // Write the current character
         chars[writeIndex] = currentChar
         writeIndex += 1
         
-        // Write the count if greater than 1
+        
         if count > 1 {
             let countString = String(count)
             for digitChar in countString {
@@ -58,6 +70,9 @@ func compress(_ chars: inout [Character]) -> Int {
         }
     }
     
-    // Return the new length of the compressed array
     return writeIndex
 }
+
+var chars: [Character] =  ["a","a","b","b","b","c","c","c"]
+compress(&chars)
+print(chars)

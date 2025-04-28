@@ -42,10 +42,23 @@
  Input: chars = ["a","b","b","b","b","b","b","b","b","b","b","b","b"]
  Output: Return 4, and the first 4 characters of the input array should be: ["a","b","1","2"].
  Explanation: The groups are "a" and "bbbbbbbbbbbb". This compresses to "ab12".
+ 
+ 
+ идея в том, чтобы не использовать дополнительное пространство
+ остатки после write нас не волнуют 
+ 
+ write - по нему будем записывать элемент в массив
+ 
+ Будем двигать readIndex и считать count пока у нас последующие элементы равны
+ 
+ начнем с 0 оба
+ 
+ добавили букву writeIndex + 1, цифру тоже += 1 
  */
 
 func compress(_ chars: inout [Character]) -> Int {
     var writeIndex = 0
+    
     var readIndex = 0
     
     while readIndex < chars.count {
@@ -53,6 +66,7 @@ func compress(_ chars: inout [Character]) -> Int {
         var count = 0
         
         while readIndex < chars.count && chars[readIndex] == currentChar {
+            //Двигаем readIndex пока элементы одинаковые
             readIndex += 1
             count += 1
         }

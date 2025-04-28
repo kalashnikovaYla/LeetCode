@@ -64,3 +64,9 @@ func rle(string: String) -> String {
     answer.append(pack(character: lastCharacter, lenght: string.count - lastIndex))
     return answer.joined(separator: "")
 }
+
+
+/*
+ Мы берем 1 элемент по индексу 0 и делаем его lastCharacter
+ затем начиная с 1..<chars.count мы проходимя по массиву и как только у нас не совпало, мы добавляем символ в result 
+ */

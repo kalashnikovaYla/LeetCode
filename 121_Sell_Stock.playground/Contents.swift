@@ -28,11 +28,12 @@
 func maxProfit(_ prices: [Int]) -> Int {
     guard !prices.isEmpty else { return 0 }
     
+    //мы ставим minPrice Int.max
     var minPrice = Int.max
     var maxProfit = 0
     
     for price in prices {
-        if price < minPrice {
+        if price < minPrice {//это условие всегда сработает так как любое число меньше Int.max
             minPrice = price
         } else {
             

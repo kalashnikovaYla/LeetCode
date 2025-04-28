@@ -39,6 +39,7 @@ class Solution {
                 return mid
             }
             
+            //Если элемент left <= элемент mid {}
             if nums[left] <= nums[mid] {
                 if nums[left] <= target && target < nums[mid] {
                     right = mid - 1

@@ -20,7 +20,7 @@
  Explanation: The longest palindrome that can be built is "a", whose length is 1.
  */
 
-
+// порядок тут не важен, поэтому достаточно посчитать все элементы количество которых  (count % 2 == 0)
 class Solution {
     func longestPalindrome(_ s: String) -> Int {
         var charCount = [Character: Int]()
@@ -41,6 +41,7 @@ class Solution {
             }
         }
         
+        //1 элемент мб представлен в единственном экземпляре
         if hasOddCount {
             length += 1
         }

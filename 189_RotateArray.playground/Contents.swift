@@ -22,6 +22,11 @@
  Explanation:
  rotate 1 steps to the right: [99,-1,-100,3]
  rotate 2 steps to the right: [3,99,-1,-100]
+ 
+ 
+ k = 20
+ 20 % 7 = 6
+ подвинуть надо всего на 6 
  */
 
 class Solution {
@@ -53,3 +58,6 @@ func rotate(_ nums: inout [Int], _ k: Int) {
 }
 var nums = [1,2,3,4,5,6,7]
 rotate(&nums, 3)
+
+
+

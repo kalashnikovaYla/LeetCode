@@ -27,6 +27,9 @@
  The result of the merge is [1].
  Note that because m = 0, there are no elements in nums1. The 0 is only there to ensure the merge result can fit in nums1.
 
+ 
+ мы сравниваем начиная с конца, если элемент из j больше, то j -=1
+ вставляем его в 1 массив на последнее место и тд 
  */
 
 func merge(_ nums1: inout [Int], _ m: Int, _ nums2: [Int], _ n: Int) {
@@ -35,6 +38,7 @@ func merge(_ nums1: inout [Int], _ m: Int, _ nums2: [Int], _ n: Int) {
     var k = m + n - 1
     var j = n - 1
     
+    //мы используем цикл именно по j 
     while j >= 0 {
         if i >= 0 && nums1[i] > nums2[j] {
             nums1[k] = nums1[i]

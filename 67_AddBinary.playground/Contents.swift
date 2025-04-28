@@ -29,6 +29,8 @@ func addBinary(_ a: String, _ b: String) -> String {
             totalSum += Int(String(b[b.index(b.startIndex, offsetBy: bLength)]))!
             bLength -= 1
         }
+        
+        //Вставляем именно в начало
         result = String(totalSum % 2) + result
         carry = totalSum / 2
     }

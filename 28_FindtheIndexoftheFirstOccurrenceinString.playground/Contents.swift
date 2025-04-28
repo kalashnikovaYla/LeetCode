@@ -15,6 +15,10 @@
  Input: haystack = "leetcode", needle = "leeto"
  Output: -1
  Explanation: "leeto" did not occur in "leetcode", so we return -1.
+ 
+ 0 1 2 3 4 5 6 7
+ l e e t c o d e
+ haystack[5..<8]
  */
 
 

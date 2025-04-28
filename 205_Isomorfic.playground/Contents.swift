@@ -30,6 +30,7 @@
 
  Output: true
 
+ Мы должны сделать словарь, key это текущей элемент s, value это текущий элемент T
 
  */
 
@@ -40,6 +41,7 @@ func isIsomorphic(_ s: String, _ t: String) -> Bool {
         return false
     }
     
+    //нужно завести 2 словаря
     var sToTMapping: [Character: Character] = [:]
     var tToSMapping: [Character: Character] = [:]
     

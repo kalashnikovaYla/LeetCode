@@ -23,9 +23,13 @@
  Input: s1 = "kelb", s2 = "kelb"
  Output: true
  Explanation: The two strings are already equal, so no string swap operation is required.
+ 
+ В чем идея? мы берем и проверяем чем 2 строка отличается от 1. Записываем эти индексы в массив [0, 3]
+ Потом для 2 строки меняем местами 2 элемента и сравниваем, получилось ли равно 2 строке 
   
  */
  
+
 func areAlmostEqual(_ s1: String, _ s2: String) -> Bool {
     if s1 == s2 { return true }
     

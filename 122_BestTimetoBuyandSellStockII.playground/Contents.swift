@@ -33,8 +33,9 @@ class Solution {
     func maxProfit(_ prices: [Int]) -> Int {
         var totalProfit = 0
         
+        //начинаем с элемента под индексом 1
         for i in 1..<prices.count {
-            
+            //Если prev < current тогда покупаем и продаем 
             if prices[i] > prices[i - 1] {
                 totalProfit += prices[i] - prices[i - 1]
             }

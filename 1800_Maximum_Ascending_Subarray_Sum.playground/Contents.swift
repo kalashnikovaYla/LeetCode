@@ -22,7 +22,15 @@
  Input: nums = [12,17,15,13,10,11,12]
  Output: 33
  Explanation: [10,11,12] is the ascending subarray with the maximum sum of 33.
+ 
+ нужно вернуть максимально возможную сумму строго возрастающего подмассива
+ 
+ мы ставим maxSum на 1 элемент, sum на 1 элемент
+ low == 0 hight == 1
+ и начиная с 1 элемента проверяем, что nums[hight - 1] < nums[hight]
  */
+
+
 func maxAscendingSum(_ nums: [Int]) -> Int {
     var maxSum = nums.first ?? 0
     var currerntSum = nums.first ?? 0

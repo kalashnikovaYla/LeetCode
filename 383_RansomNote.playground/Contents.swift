@@ -18,6 +18,11 @@
  Example 3:
  Input: ransomNote = "aa", magazine = "aab"
  Output: true
+ 
+ мы собрали наш словарь, и пошли перебирать все карактерс
+ когда перебираем и находим, делаем у этого элемента count -= 1
+ 
+ если count == 0 return false 
  */
 
 

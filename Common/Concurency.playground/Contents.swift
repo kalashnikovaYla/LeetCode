@@ -619,9 +619,33 @@ func getAdverb(id: String, completion: @escaping(Adverb) -> Void) {
     sleep(1)
     completion(Adverb(id: id))
 }
+
+func getAdverb(id: String) async -> Adverb {
+    try? await Task.sleep(nanoseconds: 1_000_000_000)
+    return Adverb(id: id)
+}
+
+func asyncGetAdverbs(ids: [String]) async -> [Adverb] {
+    return await withTaskGroup(of: (Int, Adverb).self) { group in
+        for (index, id) in ids.enumerated() {
+            group.addTask {
+                let adverb = await getAdverb(id: id)
+                return (index, adverb)
+            }
+        }
+        
+        var tempResults = Array<Adverb?>(repeating: nil, count: ids.count)
+        
+        for await (index, adverb) in group {
+            tempResults[index] = adverb
+        }
+        
+        return tempResults.compactMap { $0 }
+    }
+}
+
 func getAdverbs(ids: [String],  completion: @escaping([Adverb]) -> Void) {
     let group = DispatchGroup()
-    let lock = NSLock()
     
     var array: [Adverb?] = Array(repeating: nil, 
                                  count: ids.count)
@@ -629,9 +653,7 @@ func getAdverbs(ids: [String],  completion: @escaping([Adverb]) -> Void) {
     for (index, id) in ids.enumerated() {
         group.enter()
         getAdverb(id: id) { adverb in
-           // lock.lock()
             array[index] = adverb
-           // lock.unlock()
             group.leave()
         }
     }
@@ -654,6 +676,21 @@ func doSomething22() {
 //doSomething22()
 
 func doSomething23() {
+    let range = 1...25
+    let ids = range.map {
+        String($0)
+    }
+    
+    Task {
+        let result = await asyncGetAdverbs(ids: ids)
+        print(result)
+    }
+}
+
+//doSomething23()
+
+
+func doSomething25() {
     let queue = DispatchQueue(label: "example", attributes: .concurrent)
     var result = [Int]()
     for i in 0..<5 {
@@ -665,4 +702,4 @@ func doSomething23() {
         print(result)
     }
 }
-doSomething23() //Порядок и результат не гарантирован 
+//doSomething25() //Порядок и результат не гарантирован

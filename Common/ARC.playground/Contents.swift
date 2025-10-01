@@ -10,7 +10,7 @@ class Object {
 var object: Object? = Object()
 let array = [object]
 object = nil
-print(array[0]?.value) ///Optional("value")
+//print(array[0]?.value) ///Optional("value")
 
 
 
@@ -35,4 +35,45 @@ if let obj = object {
 
 // Удаляем сильную ссылку
 object = nil
-print(array2.first?.object?.value)//nil
+//print(array2.first?.object?.value)//nil
+
+
+
+class ClassA {
+    var child: ClassB
+    init(child: ClassB) {
+        self.child = child
+    }
+    deinit {
+        print("deinit")
+    }
+}
+
+class ClassB {
+    weak var parent: ClassA?
+}
+
+let bObject = ClassB()
+var aObject: ClassA? = ClassA(child: bObject)
+bObject.parent = aObject
+aObject = nil
+
+
+struct Person {
+    let name: String
+    
+    func greetings() {
+        return { [self] in
+            print("Hello, \(self.name)")
+        }()
+    }
+    
+    ///'weak' may only be applied to class and class-bound protocol types, not 'Person'
+   /*
+    func greetings1() {
+        return { [weak self] in
+            print("Hello, \(self?.name)")
+        }()
+    }
+    */
+}

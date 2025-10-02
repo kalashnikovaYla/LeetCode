@@ -121,14 +121,14 @@ class Loger {
 }
 
 
-func example3() {
+func example4() {
     let logger = Loger()
     DispatchQueue.concurrentPerform(iterations: 1000) { i in
         logger.addEvent(log: String(i))
     }
     print(logger.logs.count)
 }
-//example3() //1000
+//example4() //1000
 
 
 func doSomething2() {

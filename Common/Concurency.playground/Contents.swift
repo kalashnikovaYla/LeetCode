@@ -80,6 +80,7 @@ var array = [Int]()
 
 func example2(){
    
+    //Concurency(66666,0x104ff0200) malloc: Heap corruption detected, free list is damaged at 0x600000c2afa0
     DispatchQueue.concurrentPerform(iterations: 1000) { i in
         array.append(i)
     }
@@ -87,6 +88,17 @@ func example2(){
 }
 //example2()
 
+
+func example3(){
+    let queue = DispatchQueue(label: "array.queue")
+    DispatchQueue.concurrentPerform(iterations: 1000) { i in
+        queue.sync {
+            array.append(i)
+        }
+    }
+    print("array = \(array.count)")
+}
+//example3() //краша не случится
 
 class Loger {
     private var queue = DispatchQueue(label: "loger queue")

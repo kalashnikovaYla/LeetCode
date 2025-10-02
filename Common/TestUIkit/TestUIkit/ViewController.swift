@@ -7,11 +7,48 @@
 
 import UIKit
 
-class ViewController2: UIViewController {
+final class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+
+        //true
+        Task {
+            print("Is Main Thread - \(Thread.isMainThread)")
+            await foo()
+            print("Is Main Thread - \(Thread.isMainThread)")
+        }
+
+        Task.detached {
+            print("Is Main Thread - \(Thread.isMainThread)")
+            await self.foo()
+            print("Is Main Thread - \(Thread.isMainThread)")
+            
+            /*
+             Is Main Thread - false
+             Is Main Thread - true
+             Is Main Thread - false
+             */
+        }
+    }
+
+    func foo() async {
+        print("Is Main Thread - \(Thread.isMainThread)")
+        try? await Task.sleep(for: .seconds(1))
+    }
+}
+
+
+class ViewController2: UIViewController {
+
+    var isShow = false
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        //testFriz()
+        //testFriz2()
     }
     
     //MARK: - Layer
@@ -78,6 +115,20 @@ class ViewController2: UIViewController {
         
         view.addSubview(view1)
         view1.frame.origin.y -= 100 //сьедит вверх на 100 (для клавы такое делали раньше)
+    }
+    
+    func testFriz(){
+        if !isShow {
+            isShow = true
+            self.navigationController?.pushViewController(TaskExampleViewController(), animated: true)
+        }
+    }
+    
+    func testFriz2(){
+        if !isShow {
+            isShow = true
+            self.navigationController?.pushViewController(TaskExampleViewController2(), animated: true)
+        }
     }
 }
 
@@ -161,7 +212,7 @@ class Network {
  }
  */
 //Желтый варнинг не обязательный к устранению
-class ViewController: UIViewController {
+class ViewController1: UIViewController {
     var label: UILabel?
     var arr: [UIView]? //'weak' may only be applied to class and class-bound protocol types, not '[UIView]' -  weak var arr: [UIView]?
     var client = Network() ///Instance will be immediately deallocated because property 'client' is 'unowned'
@@ -182,3 +233,76 @@ class ViewController: UIViewController {
         }
     }
 }
+
+
+
+final class TaskExampleViewController: UIViewController {
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .green
+        print("TaskExampleViewController", #function)
+        doHardWork()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        print("TaskExampleViewController", #function)
+    }
+
+    deinit {
+        print("TaskExampleViewController", #function)
+    }
+
+    private func doHardWork() {
+        Task {
+            var array = [Int]()
+            (0...100_000_000).forEach {
+                array.append($0)
+            }
+            print(array.count)
+        }
+    }
+}
+
+
+final class HardWorkService {
+
+       func doHardWork() {
+           Task {
+               var array = [Int]()
+               (0...100_000_000).forEach {
+                   array.append($0)
+               }
+               print(array.count)
+           }
+       }
+   }
+
+   final class TaskExampleViewController2: UIViewController {
+
+       let service = HardWorkService()
+
+       override func viewDidLoad() {
+           super.viewDidLoad()
+           view.backgroundColor = .green
+           print("TaskExampleViewController", #function)
+           doHardWork()
+       }
+
+       override func viewDidDisappear(_ animated: Bool) {
+           super.viewDidDisappear(animated)
+           print("TaskExampleViewController", #function)
+       }
+
+       deinit {
+           print("TaskExampleViewController", #function)
+       }
+
+       private func doHardWork() {
+               /// Здесь главный контекст, но когда мы обращаемся к сервису
+               /// и переходим в его для исполнения кода, то код метода уже будет
+               /// иметь исполнителя класса
+           service.doHardWork()
+       }
+   }

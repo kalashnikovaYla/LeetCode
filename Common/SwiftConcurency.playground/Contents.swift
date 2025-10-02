@@ -14,7 +14,7 @@ let counter = Counter()
 
 Task {
     let currentValue = await counter.value
-   // print(Task.currentPriority) //TaskPriority.high
+    print(Task.currentPriority) //TaskPriority.high
     await counter.increment()
 }
 
@@ -59,7 +59,7 @@ Task {
     async let badThink = persone.thinkOfBad()
 
     let (shouldBeGood, shouldBeBad) = await (goodThink, badThink)
-   // print(shouldBeGood) //результат не определен, то bad, то good
+    print(shouldBeGood) //результат не определен, то bad, то good
 }
 
 
@@ -128,12 +128,12 @@ final actor MyGlobalActor: GlobalActor {
 ///Attribute  'GlobalActor' is not supported on a closure -  'GlobalActor' не получится поставить, но можно @MainActor, обязательно у обоих
 Task.detached { @MyGlobalActor in
     for i in 0..<2 {
-        //print("one")
+        print("one")
     }
 }
 Task.detached { @MyGlobalActor in
     for i in 0..<2 {
-        //print("two")
+        print("two")
     }
 }
 /*
@@ -212,3 +212,295 @@ protocol AnyAsyncService {
 actor AsyncService: AnyAsyncService {
     func doSomething() async {}
 }
+
+
+//MARK: - Continuation
+func loadData(by id: Int, completion: @escaping (Data) -> Void) { }
+
+
+func fetchData(by id: Int) async -> Data {
+    await withCheckedContinuation { continuation in
+        loadData(by: id) { data in
+             continuation.resume(returning: data)
+        }
+    }
+}
+
+
+func fetchData() async throws -> String {
+    return try await withCheckedThrowingContinuation { continuation in
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+            continuation.resume(returning: "Данные успешно получены")
+        }
+    }
+}
+
+func fetchDataUnsafe() async throws -> String {
+    return try await withUnsafeThrowingContinuation { continuation in
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+            // Вызов resume — ответственность за корректность возлагается на разработчика
+            continuation.resume(returning: "Данные успешно получены (unsafe)")
+            // Следует быть аккуратным: деопределять, что вызов resuming случится только один раз
+        }
+    }
+}
+
+
+
+//MARK: - Cancel task
+
+
+func performTask() async {
+    do {
+        for i in 1...10 {
+            ///Проверяет, отменена ли текущая задача, и выбрасывает ошибку `CancellationError`, если отмена действительно произошла.
+            try Task.checkCancellation()
+            print("Выполнение итерации \(i)")
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+        }
+    } catch is CancellationError {
+        print("Задача отменена (CancellationError перехвачена)")
+    } catch {
+        print("Произошла другая ошибка: (error)")
+    }
+}
+
+let task = Task {
+    await performTask()
+}
+task.cancel() //Задача отменена (CancellationError перехвачена)"
+
+func performTaskTwo() async {
+    do {
+        for i in 1...4 {
+            ///Когда использовать: Когда нужно просто проверить состояние отмены без выбрасывания исключения.
+            if !Task.isCancelled {
+                print("Выполнение итерации \(i)")
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+            }
+        }
+    } catch {
+        print("Задача отменена")
+    }
+}
+
+let task2 = Task {
+    await performTaskTwo()
+}
+task2.cancel()
+ 
+
+
+func fetchData(url: URL) async throws -> Data {
+    return try await withCheckedThrowingContinuation { continuation in
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+           print("Task execute")
+            if let error = error {
+                continuation.resume(throwing: error)
+            } else if let data = data {
+                continuation.resume(returning: data)
+            } else {
+                continuation.resume(throwing: URLError(.badServerResponse))
+            }
+        }
+
+        guard !Task.isCancelled else {
+            //continuation.resume(throwing: CancellationError())
+            task.cancel()
+            return
+        }
+        task.resume()
+    }
+}
+
+let url = URL(string: "https://example.com")!
+let task3 = Task {
+    if let data = try? await fetchData(url: url) {
+    } else {
+        print("Ошибка загрузки данных или задача была отменена")
+    }
+}
+
+task3.cancel() //Тут отмены не произойдет если будем использовать внутри, нужно использовать др метод
+
+
+actor Networking {
+    var currentTask: Task<Data, Error>?
+
+    func fetchData(from url: URL) {
+        currentTask?.cancel()
+
+        currentTask = Task {
+            do {
+                let (data, response) = try await URLSession.shared.data(from: url)
+                print("Получено данных: (data.count) байт")
+                return data
+            } catch {
+                if (error as NSError).code == NSURLErrorCancelled {
+                    print("Запрос был отменен")
+                } else {
+                    print("Ошибка: (error.localizedDescription)")
+                }
+                throw error
+            }
+        }
+    }
+
+    func cancel() {
+        currentTask?.cancel()
+    }
+}
+
+
+//MARK: - Task Async call
+
+actor AsyncTest {
+    func test1() -> String { return "test1"}
+    func test2() -> String { return "test2"}
+    func test3() -> String { return "test3"}
+}
+
+let asyncTestActor = AsyncTest()
+
+//Последовательно
+Task(priority: .high) {
+    let first = await asyncTestActor.test1()
+    let second = await asyncTestActor.test2()
+    let third = await asyncTestActor.test3()
+}
+
+//Паралелльно
+
+Task(priority: .high) {
+    async let first = asyncTestActor.test1()
+    async let second = asyncTestActor.test2()
+    async let third = asyncTestActor.test3()
+    
+    let (f, s, t) = await (first, second, third)
+    print(f) //test1
+}
+
+//MARK: - Task Group
+func fetchData(from url: URL, index: Int) async throws -> (Data, Int) {
+    let (data, _) = try await URLSession.shared.data(from: url)
+    return (data, index)
+}
+
+func loadMultipleURLs(urls: [URL]) async throws -> [Data] {
+    try await withThrowingTaskGroup(of: (Data, Int).self,
+                                    returning: [Data].self) { group in
+        
+        urls.enumerated().forEach { index, url in
+            group.addTask {
+                try await fetchData(from: url, index: index)
+            }
+        }
+        
+        var results = [Data](repeating: Data(), count: urls.count)
+        for try await (data, index) in group {
+            results[index] = data
+        }
+        return results
+    }
+}
+
+
+ 
+ 
+//MARK: - AsyncSequence
+struct AsyncCounter: AsyncSequence {
+    let limit: Int
+
+    struct AsyncIterator: AsyncIteratorProtocol {
+        let limit: Int
+        var current = 1
+
+        mutating func next() async -> Int? {
+            guard !Task.isCancelled else {
+                return nil
+            }
+
+            guard current <= limit else {
+                return nil
+            }
+            let result = current
+            current += 1
+            return result
+        }
+    }
+
+    func makeAsyncIterator() -> AsyncIterator {
+        return AsyncIterator(limit: limit)
+    }
+}
+
+ 
+func printAsyncCounter() async {
+    for await number in AsyncCounter(limit: 10) {
+        print(number, terminator: " ")
+    }
+}
+
+Task {
+    await printAsyncCounter()
+}
+
+
+//MARK: - Async Stream
+
+///AsyncStream в Swift — это структура, которая позволяет создавать асинхронные последовательности значений. Она была введена в Swift 5.5 как часть расширений для работы с асинхронным программированием и предоставляет удобный способ для работы с потоками данных, которые могут поступать по мере их получения.
+///AsyncStream позволяет вам генерировать последовательности значений, которые могут быть получены асинхронно. Это полезно для работы с данными, которые могут поступать из сетевых запросов, событий пользовательского интерфейса или других асинхронных источников.
+func createAsyncStream() -> AsyncStream<Int> {
+    return AsyncStream { continuation in
+        Task {
+            for number in 1...5 {
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                continuation.yield(number)
+            }
+            continuation.finish()
+        }
+    }
+}
+
+let asyncStream = createAsyncStream()
+
+Task {
+    for await number in asyncStream {
+        print("Received number: \(number)")
+    }
+    print("Stream finished.")
+}
+
+public struct AsyncQueue: Sendable {
+    private let taskStreamContinuation: AsyncStream<@Sendable () async -> Void>.Continuation
+    
+    public init(priority: TaskPriority? = nil) {
+        let (stream, continuation) = AsyncStream<@Sendable() async -> Void>.makeStream()
+        self.taskStreamContinuation = continuation
+        
+        Task.detached(priority: priority) {
+            for await task in stream {
+                await task()
+            }
+        }
+    }
+    
+    public func close() {
+        taskStreamContinuation.finish()
+    }
+    
+    public func enqueue(_ task: @escaping @Sendable () async -> Void) {
+        taskStreamContinuation.yield(task)
+    }
+    
+    public func enqueueAndWait<T: Sendable>(_ task: @escaping @Sendable () async -> T) async -> T {
+        await withUnsafeContinuation { continuation in
+            taskStreamContinuation.yield {
+                continuation.resume(returning: await task())
+            }
+        }
+    }
+}
+
+
+

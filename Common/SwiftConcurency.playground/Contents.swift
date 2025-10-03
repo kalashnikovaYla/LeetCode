@@ -86,6 +86,40 @@ actor Storage {
     }
 }
 
+enum StorageError: Error {
+    case dataNotFound
+    case otherError(String)
+}
+
+actor StorageWithError {
+    var cache = [UUID: Task<Data?, Error>]()
+    
+    func getHeavyData(for key: UUID) async throws -> Data? {
+        if let doneTask = cache[key] {
+            return try await doneTask.value
+        }
+        
+        let task = Task<Data?, Error> {
+            do {
+                if let data = try await requestDataFromDatabase(for: key) {
+                    return data
+                } else {
+                    throw StorageError.dataNotFound
+                }
+            } catch {
+                throw error
+            }
+        }
+        cache[key] = task
+        return try await task.value
+    }
+    
+    private func requestDataFromDatabase(for id : UUID) async -> Data? {
+        try? await Task.sleep(for: .seconds(7))
+        return nil
+    }
+}
+
 
 //MARK: - Actor hopping
 
@@ -217,7 +251,10 @@ actor AsyncService: AnyAsyncService {
 //MARK: - Continuation
 func loadData(by id: Int, completion: @escaping (Data) -> Void) { }
 
-
+///- Осторожно проверяет, что `resume` вызывается ровно один раз.
+///- Можно использовать только один вызов `resume`.
+///- Хорошо подходит для простых случаев, когда callback возвращает один результат.
+///- Часто применяется при оборачивании функций с одним `completion`.
 func fetchData(by id: Int) async -> Data {
     await withCheckedContinuation { continuation in
         loadData(by: id) { data in
@@ -226,7 +263,8 @@ func fetchData(by id: Int) async -> Data {
     }
 }
 
-
+///- Для ситуаций, когда callback может завершиться не только успешно, но и с ошибкой.
+///- Возвращает `async throws`, и `resume` вызывается либо с `returning`, либо с `throwing`.
 func fetchData() async throws -> String {
     return try await withCheckedThrowingContinuation { continuation in
         DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
@@ -327,23 +365,25 @@ task3.cancel() //Тут отмены не произойдет если буде
 actor Networking {
     var currentTask: Task<Data, Error>?
 
-    func fetchData(from url: URL) {
+    func fetchData(from url: URL) async throws -> Data {
         currentTask?.cancel()
 
-        currentTask = Task {
+        let task = Task<Data, Error> {
             do {
                 let (data, response) = try await URLSession.shared.data(from: url)
-                print("Получено данных: (data.count) байт")
+                print("Получено данных: \(data.count) байт")
                 return data
             } catch {
                 if (error as NSError).code == NSURLErrorCancelled {
                     print("Запрос был отменен")
                 } else {
-                    print("Ошибка: (error.localizedDescription)")
+                    print("Ошибка: \(error.localizedDescription)")
                 }
                 throw error
             }
         }
+        currentTask = task
+        return try await task.value
     }
 
     func cancel() {

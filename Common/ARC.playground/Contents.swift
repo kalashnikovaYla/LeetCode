@@ -29,12 +29,12 @@ class WeakObjectWrapper {
 var object2: Object? = Object()
 
 // Добавляем слабую ссылку в массив
-if let obj = object {
+if let obj = object2 {
     array2.append(WeakObjectWrapper(object: obj))
 }
 
 // Удаляем сильную ссылку
-object = nil
+object2 = nil
 //print(array2.first?.object?.value)//nil
 
 

@@ -100,4 +100,23 @@ let key2 = KeyObject(a: 1)
 var dict: [KeyObject: String] = [:]
 dict[key1] = "hi"
 dict[key2] = "h"
-print(dict[key1])
+//print(dict[key1])
+
+
+class ClassA {
+    class func classMethod() {}
+    static func staticMethod() {}
+}
+
+extension ClassA {
+    func staticMethod2() {}
+}
+
+class ClassB: ClassA {
+    override class func classMethod() {}
+    ///Cannot override static method
+    //override static func staticMethod() {}
+    
+    ///Do not see this func 
+    //override func staticMethod2() {}
+}

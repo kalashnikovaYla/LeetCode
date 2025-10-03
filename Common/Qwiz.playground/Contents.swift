@@ -396,4 +396,16 @@ func doSomething27() {
     wrapper()
 }
 
-doSomething27()
+//doSomething27()
+
+
+func doSomething28() {
+    var array = [1,2,3]
+    
+    for i in array {
+        print(i)
+        array = [4,5,6]
+    }
+    print(array)
+}
+doSomething28() //1 2 3 //array become [4, 5, 6]

@@ -11,6 +11,18 @@ extension ProtocolExample8 {
     }
 }
 
+struct StructWithProtocol: ProtocolExample8 {
+    func doSomething() {
+        print("Struct Implementation")
+    }
+}
+
+let firstStruct = StructWithProtocol()
+firstStruct.doSomething() //Struct Implementation
+
+let secondStruct: ProtocolExample8 = StructWithProtocol()
+secondStruct.doSomething() //Default Implementation
+
 class ClassExample8: ProtocolExample8 {
     func doSomething() {
         print("Required Implementation")
@@ -22,8 +34,8 @@ class ClassExample8: ProtocolExample8 {
 
 let first = ClassExample8()
 let second: ProtocolExample8 = ClassExample8()
-first.doSomething()
-second.doSomething()
+//first.doSomething()
+//second.doSomething()
 //second.doSomething2()
 
 /*

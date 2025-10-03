@@ -7,18 +7,24 @@
 
 import UIKit
 
-final class ViewController: UIViewController {
+final class ViewController2: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        testIsMainThread()
+    }
 
+    func testIsMainThread() {
         //true
+        ///Task { ... }` по умолчанию наследует контекст и приоритет вызывающего потока, обычно это главный поток, если вызов сделал UI-элемент. Поэтому внутри такого блока `Thread.isMainThread` часто возвращает `true`.
         Task {
             print("Is Main Thread - \(Thread.isMainThread)")
             await foo()
             print("Is Main Thread - \(Thread.isMainThread)")
         }
 
+        ///Этот вызов создает новую задачу, которая не связана с текущим контекстом выполнения или с текущим потокам. Поэтому она может быть запущена на глобальном фоновом потоке или очереди, которая не является главным интерфейсным потоком.
         Task.detached {
             print("Is Main Thread - \(Thread.isMainThread)")
             await self.foo()
@@ -31,7 +37,7 @@ final class ViewController: UIViewController {
              */
         }
     }
-
+    
     func foo() async {
         print("Is Main Thread - \(Thread.isMainThread)")
         try? await Task.sleep(for: .seconds(1))
@@ -39,7 +45,7 @@ final class ViewController: UIViewController {
 }
 
 
-class ViewController2: UIViewController {
+class ViewController: UIViewController {
 
     var isShow = false
     override func viewDidLoad() {
@@ -49,6 +55,7 @@ class ViewController2: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         //testFriz()
         //testFriz2()
+        testFriz3()
     }
     
     //MARK: - Layer
@@ -130,6 +137,13 @@ class ViewController2: UIViewController {
             self.navigationController?.pushViewController(TaskExampleViewController2(), animated: true)
         }
     }
+    
+    func testFriz3(){
+        if !isShow {
+            isShow = true
+            self.navigationController?.pushViewController(TaskExampleViewController3(), animated: true)
+        }
+    }
 }
 
 
@@ -137,6 +151,7 @@ class ViewController2: UIViewController {
 //MARK: - Hit test
 extension UIView {
     
+    ///convert - Переводит точку касания из системы координат `self` в систему координат конкретного `subview`. Это необходимо, чтобы проверить попадание для каждого подвида в их локальных координатах.
     func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         guard isUserInteractionEnabled, !isHidden, alpha > 0.01 else {
             return nil
@@ -169,6 +184,21 @@ extension UIView {
     - Модификаторы жестов добавляют к представлениям системы, отвечающей за распознавание касаний, их "области" и правил.
 
  */
+
+
+extension UIView {
+    func findFirstResponder(in view: UIView) -> UIView? {
+        for subview in view.subviews {
+            if subview.isFirstResponder {
+                return subview
+            }
+            if let responder = findFirstResponder(in: subview) {
+                return responder
+            }
+        }
+        return nil
+    }
+}
 
 
 //MARK: - Point override
@@ -265,44 +295,74 @@ final class TaskExampleViewController: UIViewController {
     }
 }
 
-
+///2 решения:
+///- вынести в отдельный класс
+///- сделать Task.detached {}
 final class HardWorkService {
+    func doHardWork() {
+        Task {
+            var array = [Int]()
+            (0...100_000_000).forEach {
+                array.append($0)
+            }
+            print(array.count)
+        }
+    }
+}
 
-       func doHardWork() {
-           Task {
-               var array = [Int]()
-               (0...100_000_000).forEach {
-                   array.append($0)
-               }
-               print(array.count)
-           }
-       }
-   }
+final class TaskExampleViewController2: UIViewController {
+    
+    let service = HardWorkService()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .green
+        print("TaskExampleViewController", #function)
+        doHardWork()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        print("TaskExampleViewController", #function)
+    }
+    
+    deinit {
+        print("TaskExampleViewController", #function)
+    }
+    
+    private func doHardWork() {
+        /// Здесь главный контекст, но когда мы обращаемся к сервису
+        /// и переходим в его для исполнения кода, то код метода уже будет
+        /// иметь исполнителя класса
+        service.doHardWork()
+    }
+}
 
-   final class TaskExampleViewController2: UIViewController {
+final class TaskExampleViewController3: UIViewController {
 
-       let service = HardWorkService()
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .green
+        print("TaskExampleViewController", #function)
+        doHardWork()
+    }
 
-       override func viewDidLoad() {
-           super.viewDidLoad()
-           view.backgroundColor = .green
-           print("TaskExampleViewController", #function)
-           doHardWork()
-       }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        print("TaskExampleViewController", #function)
+    }
 
-       override func viewDidDisappear(_ animated: Bool) {
-           super.viewDidDisappear(animated)
-           print("TaskExampleViewController", #function)
-       }
+    deinit {
+        print("TaskExampleViewController", #function)
+    }
 
-       deinit {
-           print("TaskExampleViewController", #function)
-       }
-
-       private func doHardWork() {
-               /// Здесь главный контекст, но когда мы обращаемся к сервису
-               /// и переходим в его для исполнения кода, то код метода уже будет
-               /// иметь исполнителя класса
-           service.doHardWork()
-       }
-   }
+    private func doHardWork() {
+        Task.detached {
+            var array = [Int]()
+            (0...100_000_000).forEach {
+                array.append($0)
+            }
+            print(array.count)
+        }
+    }
+}

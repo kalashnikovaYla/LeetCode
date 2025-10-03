@@ -421,18 +421,18 @@ Task(priority: .high) {
 }
 
 //MARK: - Task Group
-func fetchData(from url: URL, index: Int) async throws -> (Data, Int) {
+func fetchDataWithThrow(from url: URL, index: Int) async throws -> (Data, Int) {
     let (data, _) = try await URLSession.shared.data(from: url)
     return (data, index)
 }
 
-func loadMultipleURLs(urls: [URL]) async throws -> [Data] {
+func loadMultipleURLsWithThrow(urls: [URL]) async throws -> [Data] {
     try await withThrowingTaskGroup(of: (Data, Int).self,
                                     returning: [Data].self) { group in
         
         urls.enumerated().forEach { index, url in
             group.addTask {
-                try await fetchData(from: url, index: index)
+                try await fetchDataWithThrow(from: url, index: index)
             }
         }
         
@@ -444,6 +444,32 @@ func loadMultipleURLs(urls: [URL]) async throws -> [Data] {
     }
 }
 
+func fetchData(from url: URL, index: Int) async -> (Data?, Int) {
+    do {
+        let (data, _) = try await URLSession.shared.data(from: url)
+        return (data, index)
+    } catch {
+        return (nil, index)
+    }
+}
+
+func loadMultipleURLs(urls: [URL]) async -> [Data] {
+    await withTaskGroup(of: (Data?, Int).self) { group in
+        for (index, url) in urls.enumerated() {
+            group.addTask {
+                await fetchData(from: url, index: index)
+            }
+        }
+        
+        var results = [Data?](repeating: nil, count: urls.count)
+        for await (data, index) in group {
+            if let data = data {
+                results[index] = data
+            }
+        }
+        return results.compactMap { $0 }
+    }
+}
 
  
  

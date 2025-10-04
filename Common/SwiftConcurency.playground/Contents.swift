@@ -1,3 +1,4 @@
+ 
 import Foundation
 
 
@@ -120,7 +121,6 @@ actor StorageWithError {
     }
 }
 
-
 //MARK: - Actor hopping
 
 actor ActorA {
@@ -148,7 +148,6 @@ let sendableClosure = { @Sendable (number: Int) -> String in
         return "Less than 12"
     }
 }
-
 
 //MARK: - Global actor
 ///class/struct не даст использовать
@@ -258,7 +257,7 @@ func loadData(by id: Int, completion: @escaping (Data) -> Void) { }
 func fetchData(by id: Int) async -> Data {
     await withCheckedContinuation { continuation in
         loadData(by: id) { data in
-             continuation.resume(returning: data)
+            continuation.resume(returning: data)
         }
     }
 }
@@ -286,7 +285,6 @@ func fetchDataUnsafe() async throws -> String {
 
 
 //MARK: - Cancel task
-
 
 func performTask() async {
     do {
@@ -330,6 +328,8 @@ task2.cancel()
 
 
 func fetchData(url: URL) async throws -> Data {
+    try Task.checkCancellation()
+
     return try await withCheckedThrowingContinuation { continuation in
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
            print("Task execute")
@@ -340,12 +340,6 @@ func fetchData(url: URL) async throws -> Data {
             } else {
                 continuation.resume(throwing: URLError(.badServerResponse))
             }
-        }
-
-        guard !Task.isCancelled else {
-            //continuation.resume(throwing: CancellationError())
-            task.cancel()
-            return
         }
         task.resume()
     }
@@ -367,7 +361,7 @@ actor Networking {
 
     func fetchData(from url: URL) async throws -> Data {
         currentTask?.cancel()
-
+        
         let task = Task<Data, Error> {
             do {
                 let (data, response) = try await URLSession.shared.data(from: url)
@@ -385,7 +379,7 @@ actor Networking {
         currentTask = task
         return try await task.value
     }
-
+    
     func cancel() {
         currentTask?.cancel()
     }
@@ -452,7 +446,6 @@ func fetchData(from url: URL, index: Int) async -> (Data?, Int) {
         return (nil, index)
     }
 }
-
 func loadMultipleURLs(urls: [URL]) async -> [Data] {
     await withTaskGroup(of: (Data?, Int).self) { group in
         for (index, url) in urls.enumerated() {
@@ -472,9 +465,10 @@ func loadMultipleURLs(urls: [URL]) async -> [Data] {
 }
 
  
- 
 //MARK: - AsyncSequence
 struct AsyncCounter: AsyncSequence {
+    typealias Element = Int 
+    
     let limit: Int
 
     struct AsyncIterator: AsyncIteratorProtocol {
@@ -500,7 +494,6 @@ struct AsyncCounter: AsyncSequence {
     }
 }
 
- 
 func printAsyncCounter() async {
     for await number in AsyncCounter(limit: 10) {
         print(number, terminator: " ")
@@ -537,3 +530,58 @@ Task {
     print("Stream finished.")
 }
 
+
+Task(priority: .high) {
+    print("Задача запущена с высоким приоритетом")
+    
+    /// Задача запустится с низким приоритетом,
+    /// но из-за вызова value её приоритет будет увеличен до high
+    await Task(priority: .low) {
+        //print(Task.currentPriority) //TaskPriority.high
+    }.value
+}
+
+
+
+let task6 = Task {
+    print("Task 1 has started")
+    await startLongTask()
+    print("Task 1 has finished")
+   
+    print("Task 2 has started")
+    await startLongTask()
+    print("Task 2 has finished")
+}
+
+func startLongTask() async {
+    try? await Task.sleep(for: .seconds(5))
+}
+task6.cancel()
+/*
+ Task 1 has started
+ Task 1 has finished
+ Task 2 has started
+ Task 2 has finished
+ */
+
+
+let taskDetached = Task.detached {
+    print("Task detached 1 has started")
+    await startLongTask()
+    print("Task detached 1 has finished")
+   
+    print("Task detached 2 has started")
+    await startLongTask()
+    print("Task detached 2 has finished")
+}
+
+func startLongTask2() async {
+    try? await Task.sleep(for: .seconds(5))
+}
+taskDetached.cancel()
+/*
+ Task detached 1 has started
+ Task detached 1 has finished
+ Task detached 2 has started
+ Task detached 2 has finished
+ */

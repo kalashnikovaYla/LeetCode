@@ -249,7 +249,8 @@ actor LocalCache<T> {
         return Date().timeIntervalSince(lastUpdated) < lifetime
     }
 }
-let cache = LocalCache(initialValue: "Hello", lifetime: 10)
+
+let cache = LocalCache(initialValue: "Hello", lifetime: 1)
 
 Task {
     await cache.setNewCacheValue("World")
@@ -257,11 +258,11 @@ Task {
     try? await Task.sleep(nanoseconds: 2_000_000_000)
     
     if let elapsed = await cache.timeSinceLastUpdate() {
-        //print("Прошло секунд: \(elapsed)")
+        //print("Прошло секунд: \(elapsed)") //Прошло секунд: 2.1390050649642944
     }
     
     let isValid = await cache.isCacheValid()
-    //print("Кеш валиден? \(isValid)")
+    //print("Кеш валиден? \(isValid)") //Кеш валиден? false
 }
 
 
@@ -315,7 +316,7 @@ func fetchDataUnsafe() async throws -> String {
         DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
             // Вызов resume — ответственность за корректность возлагается на разработчика
             continuation.resume(returning: "Данные успешно получены (unsafe)")
-            // Следует быть аккуратным: деопределять, что вызов resuming случится только один раз
+            // Следует быть аккуратным: определять, что вызов resuming случится только один раз
         }
     }
 }
@@ -347,9 +348,9 @@ task6.cancel() //отмены не произойдет, просто cancel н�
 
 
 let taskDetached = Task.detached {
-    print("Task detached 1 has started")
+    //print("Task detached 1 has started")
     await startLongTask()
-    print("Task detached 1 has finished")
+    //print("Task detached 1 has finished")
 }
 
 taskDetached.cancel() //отмены не произойдет, просто cancel не достаточно
@@ -360,14 +361,14 @@ taskDetached.cancel() //отмены не произойдет, просто can
 
 let taskDetachedCancelable = Task.detached {
     guard !Task.isCancelled else {
-        print("Task.detached was canceled")
+        print("taskDetachedCancelable was canceled")
         return
     }
-    print("Task detached 1 has started")
+    //print("taskDetachedCancelable 1 has started")
     await startLongTask()
-    print("Task detached 1 has finished")
+    //print("taskDetachedCancelable 1 has finished")
 }
-taskDetachedCancelable.cancel() //Task.detached was canceled
+taskDetachedCancelable.cancel() //taskDetachedCancelable was canceled
 
 
 func performTask() async {
@@ -379,14 +380,14 @@ func performTask() async {
             try await Task.sleep(nanoseconds: 1_000_000_000)
         }
     } catch is CancellationError {
-        //print("Задача отменена (CancellationError перехвачена)")
+        print("Задача отменена (CancellationError перехвачена)")
     } catch {
-        //print("Произошла другая ошибка: \(error)")
+        print("Произошла другая ошибка: \(error)")
     }
 }
 
 let task = Task {
-    await performTask()
+    //await performTask()
 }
 task.cancel() //Задача отменена (CancellationError перехвачена)"
 
@@ -394,29 +395,31 @@ func performTaskTwo() async {
     do {
         for i in 1...4 {
             ///Когда использовать: Когда нужно просто проверить состояние отмены без выбрасывания исключения.
-            if !Task.isCancelled {
-                //print("Выполнение итерации \(i)")
-                try await Task.sleep(nanoseconds: 1_000_000_000)
-            }
+            guard !Task.isCancelled else { return }
+            print("Выполнение итерации \(i)")
+            try await Task.sleep(nanoseconds: 1_000_000_000)
         }
     } catch {
-        //print("Задача отменена")
+        print("Задача отменена")
     }
 }
 
 let task2 = Task {
-    await performTaskTwo()
+    //await performTaskTwo()
 }
 task2.cancel()
  
 
 
 func fetchData(url: URL) async throws -> Data {
-    try Task.checkCancellation()
-
     return try await withCheckedThrowingContinuation { continuation in
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
-           //print("Task execute")
+            
+            if Task.isCancelled {
+                continuation.resume(throwing: CancellationError())
+                return
+            }
+
             if let error = error {
                 continuation.resume(throwing: error)
             } else if let data = data {
@@ -433,11 +436,10 @@ let url = URL(string: "https://example.com")!
 let task3 = Task {
     if let data = try? await fetchData(url: url) {
     } else {
-        //print("Ошибка загрузки данных или задача была отменена")
+        print("Ошибка загрузки данных или задача была отменена")
     }
 }
-
-task3.cancel() //Тут отмены не произойдет если будем использовать внутри, нужно использовать др метод
+task3.cancel()
 
 
 class Networking {

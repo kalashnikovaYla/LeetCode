@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var text: String = ""
+    
     var body: some View {
+        TextField("Введите текст", text: $text)
+            .modifier(InputBorderAndColorModifier())
+            .padding()
         
-        Button("Нажми меня") {
-        }
+        Button("Нажми меня") {}
         .buttonStyle(CustomButtonStyle())
     }
 }
@@ -19,32 +23,31 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
-
  
-
-struct PressedEffectModifier: ViewModifier {
-    var isPressed: Bool
+//MARK: - ViewModifier
+struct InputBorderAndColorModifier: ViewModifier {
+    @FocusState private var isFocused: Bool
     
     func body(content: Content) -> some View {
         content
-            .scaleEffect(isPressed ? 0.95 : 1.0)
-            .background(isPressed ? Color.blue.opacity(0.7) : Color.blue) 
-            .animation(.easeInOut(duration: 0.2), value: isPressed)
-            .foregroundColor(.white)
-            .cornerRadius(8)
-            .padding()
+            .focused($isFocused)
+            .padding(8)
+            .autocorrectionDisabled()
+            .foregroundColor(
+                isFocused ? .green : .primary
+            )
+            .animation(.easeInOut, value: isFocused)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(
+                        isFocused ? Color.green : Color.gray,
+                        lineWidth: 2
+                    )
+            )
     }
 }
 
-struct CustomPressableButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .modifier(PressedEffectModifier(isPressed: configuration.isPressed))
-    }
-}
- 
-
+//MARK: - ButtonStyle
 struct CustomButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label

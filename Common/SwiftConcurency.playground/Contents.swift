@@ -2,7 +2,19 @@
 import Foundation
 
 
+Task(priority: .high) {
+    //print("Задача запущена с высоким приоритетом")
+    
+    /// Задача запустится с низким приоритетом,
+    /// но из-за вызова value её приоритет будет увеличен до high
+    await Task(priority: .low) {
+        //print(Task.currentPriority) //TaskPriority.high
+    }.value
+}
+
+
 //MARK: - Sync func
+
 actor Counter {
     private(set) var value = Int.zero
     
@@ -15,7 +27,7 @@ let counter = Counter()
 
 Task {
     let currentValue = await counter.value
-    print(Task.currentPriority) //TaskPriority.high
+    //print(Task.currentPriority) //TaskPriority.high
     await counter.increment()
 }
 
@@ -60,7 +72,7 @@ Task {
     async let badThink = persone.thinkOfBad()
 
     let (shouldBeGood, shouldBeBad) = await (goodThink, badThink)
-    print(shouldBeGood) //результат не определен, то bad, то good
+    //print(shouldBeGood) //результат не определен, то bad, то good
 }
 
 
@@ -115,7 +127,7 @@ actor StorageWithError {
         return try await task.value
     }
     
-    private func requestDataFromDatabase(for id : UUID) async -> Data? {
+    private func requestDataFromDatabase(for id : UUID) async throws -> Data? {
         try? await Task.sleep(for: .seconds(7))
         return nil
     }
@@ -152,28 +164,27 @@ let sendableClosure = { @Sendable (number: Int) -> String in
 //MARK: - Global actor
 ///class/struct не даст использовать
 @globalActor
-final actor MyGlobalActor: GlobalActor {
+actor MyGlobalActor: GlobalActor {
     static let shared = MyGlobalActor()
     private init() {}
 }
 
 ///Если убрать @MyGlobalActor, вывод пойдет не по порядку
 ///Attribute  'GlobalActor' is not supported on a closure -  'GlobalActor' не получится поставить, но можно @MainActor, обязательно у обоих
+///Если просто использовать Task{} то все ок, будет выводится также друг за другом
 Task.detached { @MyGlobalActor in
     for i in 0..<2 {
-        print("one")
+        //print("one")
     }
 }
 Task.detached { @MyGlobalActor in
     for i in 0..<2 {
-        print("two")
+        //print("two")
     }
 }
 /*
  one
  one
- one
- two
  two
  two
  */
@@ -197,9 +208,12 @@ func execute() {
 
 //MARK: - Nonisolated
 
+import Foundation
+
 actor LocalCache<T> {
     private var value: T?
     nonisolated let lifetime: TimeInterval
+    private var lastUpdated: Date?
     
     var cacheValue: T? {
         value
@@ -208,22 +222,46 @@ actor LocalCache<T> {
     init(initialValue: T, lifetime: TimeInterval) {
         self.value = initialValue
         self.lifetime = lifetime
+        self.lastUpdated = Date()
     }
     
-    func setNewCachValue(_ newValue: T) {
+    func setNewCacheValue(_ newValue: T) {
         self.value = newValue
+        self.lastUpdated = Date()
     }
     
     func dropCachedValue() {
         self.value = nil
+        self.lastUpdated = nil
+    }
+    
+    func timeSinceLastUpdate() -> TimeInterval? {
+        guard let lastUpdated = lastUpdated else {
+            return nil
+        }
+        return Date().timeIntervalSince(lastUpdated)
+    }
+    
+    func isCacheValid() -> Bool {
+        guard let lastUpdated = lastUpdated else {
+            return false
+        }
+        return Date().timeIntervalSince(lastUpdated) < lifetime
     }
 }
 let cache = LocalCache(initialValue: "Hello", lifetime: 10)
 
 Task {
-    await cache.setNewCachValue("World")
-    await cache.dropCachedValue()
-    let lifetimeValue = cache.lifetime
+    await cache.setNewCacheValue("World")
+    
+    try? await Task.sleep(nanoseconds: 2_000_000_000)
+    
+    if let elapsed = await cache.timeSinceLastUpdate() {
+        //print("Прошло секунд: \(elapsed)")
+    }
+    
+    let isValid = await cache.isCacheValid()
+    //print("Кеш валиден? \(isValid)")
 }
 
 
@@ -286,6 +324,52 @@ func fetchDataUnsafe() async throws -> String {
 
 //MARK: - Cancel task
 
+let task6 = Task {
+    //print("Task 1 has started")
+    await startLongTask()
+    //print("Task 1 has finished")
+   
+    //print("Task 2 has started")
+    await startLongTask()
+    //print("Task 2 has finished")
+}
+
+func startLongTask() async {
+    try? await Task.sleep(for: .seconds(5))
+}
+task6.cancel() //отмены не произойдет, просто cancel не достаточно
+/*
+ Task 1 has started
+ Task 1 has finished
+ Task 2 has started
+ Task 2 has finished
+ */
+
+
+let taskDetached = Task.detached {
+    print("Task detached 1 has started")
+    await startLongTask()
+    print("Task detached 1 has finished")
+}
+
+taskDetached.cancel() //отмены не произойдет, просто cancel не достаточно
+/*
+ Task detached 1 has started
+ Task detached 1 has finished
+ */
+
+let taskDetachedCancelable = Task.detached {
+    guard !Task.isCancelled else {
+        print("Task.detached was canceled")
+        return
+    }
+    print("Task detached 1 has started")
+    await startLongTask()
+    print("Task detached 1 has finished")
+}
+taskDetachedCancelable.cancel() //Task.detached was canceled
+
+
 func performTask() async {
     do {
         for i in 1...10 {
@@ -295,9 +379,9 @@ func performTask() async {
             try await Task.sleep(nanoseconds: 1_000_000_000)
         }
     } catch is CancellationError {
-        print("Задача отменена (CancellationError перехвачена)")
+        //print("Задача отменена (CancellationError перехвачена)")
     } catch {
-        print("Произошла другая ошибка: (error)")
+        //print("Произошла другая ошибка: \(error)")
     }
 }
 
@@ -311,12 +395,12 @@ func performTaskTwo() async {
         for i in 1...4 {
             ///Когда использовать: Когда нужно просто проверить состояние отмены без выбрасывания исключения.
             if !Task.isCancelled {
-                print("Выполнение итерации \(i)")
+                //print("Выполнение итерации \(i)")
                 try await Task.sleep(nanoseconds: 1_000_000_000)
             }
         }
     } catch {
-        print("Задача отменена")
+        //print("Задача отменена")
     }
 }
 
@@ -332,7 +416,7 @@ func fetchData(url: URL) async throws -> Data {
 
     return try await withCheckedThrowingContinuation { continuation in
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
-           print("Task execute")
+           //print("Task execute")
             if let error = error {
                 continuation.resume(throwing: error)
             } else if let data = data {
@@ -349,15 +433,15 @@ let url = URL(string: "https://example.com")!
 let task3 = Task {
     if let data = try? await fetchData(url: url) {
     } else {
-        print("Ошибка загрузки данных или задача была отменена")
+        //print("Ошибка загрузки данных или задача была отменена")
     }
 }
 
 task3.cancel() //Тут отмены не произойдет если будем использовать внутри, нужно использовать др метод
 
 
-actor Networking {
-    var currentTask: Task<Data, Error>?
+class Networking {
+    private var currentTask: Task<Data, Error>?
 
     func fetchData(from url: URL) async throws -> Data {
         currentTask?.cancel()
@@ -365,13 +449,13 @@ actor Networking {
         let task = Task<Data, Error> {
             do {
                 let (data, response) = try await URLSession.shared.data(from: url)
-                print("Получено данных: \(data.count) байт")
+                //print("Получено данных: \(data.count) байт")
                 return data
             } catch {
                 if (error as NSError).code == NSURLErrorCancelled {
-                    print("Запрос был отменен")
+                    //print("Запрос был отменен")
                 } else {
-                    print("Ошибка: \(error.localizedDescription)")
+                    //print("Ошибка: \(error.localizedDescription)")
                 }
                 throw error
             }
@@ -382,6 +466,7 @@ actor Networking {
     
     func cancel() {
         currentTask?.cancel()
+        currentTask = nil
     }
 }
 
@@ -411,7 +496,7 @@ Task(priority: .high) {
     async let third = asyncTestActor.test3()
     
     let (f, s, t) = await (first, second, third)
-    print(f) //test1
+    //print(f) //test1
 }
 
 //MARK: - Task Group
@@ -496,7 +581,7 @@ struct AsyncCounter: AsyncSequence {
 
 func printAsyncCounter() async {
     for await number in AsyncCounter(limit: 10) {
-        print(number, terminator: " ")
+        //print(number, terminator: " ")
     }
 }
 
@@ -525,63 +610,7 @@ let asyncStream = createAsyncStream()
 
 Task {
     for await number in asyncStream {
-        print("Received number: \(number)")
+        //print("Received number: \(number)")
     }
-    print("Stream finished.")
+    //print("Stream finished.")
 }
-
-
-Task(priority: .high) {
-    print("Задача запущена с высоким приоритетом")
-    
-    /// Задача запустится с низким приоритетом,
-    /// но из-за вызова value её приоритет будет увеличен до high
-    await Task(priority: .low) {
-        //print(Task.currentPriority) //TaskPriority.high
-    }.value
-}
-
-
-
-let task6 = Task {
-    print("Task 1 has started")
-    await startLongTask()
-    print("Task 1 has finished")
-   
-    print("Task 2 has started")
-    await startLongTask()
-    print("Task 2 has finished")
-}
-
-func startLongTask() async {
-    try? await Task.sleep(for: .seconds(5))
-}
-task6.cancel()
-/*
- Task 1 has started
- Task 1 has finished
- Task 2 has started
- Task 2 has finished
- */
-
-
-let taskDetached = Task.detached {
-    print("Task detached 1 has started")
-    await startLongTask()
-    print("Task detached 1 has finished")
-   
-    print("Task detached 2 has started")
-    await startLongTask()
-    print("Task detached 2 has finished")
-}
-
-func startLongTask2() async {
-    try? await Task.sleep(for: .seconds(5))
-}
-taskDetached.cancel()
-/*
- Task detached 1 has started
- Task detached 1 has finished
- Task detached 2 has started
- Task detached 2 has finished
- */
